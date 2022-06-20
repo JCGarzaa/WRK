@@ -38,6 +38,7 @@ An app to create, edit, and post workouts for yourself and others to see and use
 **Optional Nice-to-have Stories**
 
 * User can create custom exercises
+* User can double tap a workout to save to their profile
 * User can click on workout and start/edit to make their own
 * User can view extended details of each workout
 * User can add friends
