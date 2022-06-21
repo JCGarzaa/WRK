@@ -23,6 +23,7 @@ import com.parse.ParseQuery;
 import java.util.ArrayList;
 import java.util.List;
 
+// FeedFragment is what is shown when the home logo is tapped within the app
 public class FeedFragment extends Fragment {
     public static final String TAG = "FeedFragment";
 
@@ -49,13 +50,13 @@ public class FeedFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        // link views to the layout file
         rvWorkouts = view.findViewById(R.id.rvWorkoutsCompleted);
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
         workoutsPerformed = new ArrayList<>();
         adapter = new WorkoutsAdapter(getContext(), workoutsPerformed);
         rvWorkouts.setLayoutManager(layoutManager);
         rvWorkouts.setAdapter(adapter);
-
         queryWorkouts();
     }
 

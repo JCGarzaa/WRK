@@ -16,6 +16,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.example.wrk.models.WorkoutComponent;
 import com.example.wrk.models.WorkoutPerformed;
+import com.example.wrk.models.WorkoutTemplate;
 import com.parse.FindCallback;
 import com.parse.ParseException;
 import com.parse.ParseFile;
@@ -26,12 +27,15 @@ import com.parse.ParseUser;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
 import java.util.List;
 
+// This adapter is used to help populate the RecyclerView in the FeedFragment
 public class WorkoutsAdapter extends RecyclerView.Adapter<WorkoutsAdapter.ViewHolder> {
     private Context mContext;
     private List<WorkoutPerformed> mWorkoutsPerformed;
     private List<WorkoutComponent> mWorkoutComponents;
+    private List<WorkoutTemplate> mWorkoutTemplate;
 
     public WorkoutsAdapter(Context context, List<WorkoutPerformed> workoutsPerformed) {
         this.mContext = context;
@@ -50,7 +54,7 @@ public class WorkoutsAdapter extends RecyclerView.Adapter<WorkoutsAdapter.ViewHo
         WorkoutPerformed workout = mWorkoutsPerformed.get(position);
         try {
             holder.bind(workout);
-        } catch (ParseException e) {
+        } catch (ParseException | JSONException e) {
             e.printStackTrace();
         }
     }
@@ -84,7 +88,7 @@ public class WorkoutsAdapter extends RecyclerView.Adapter<WorkoutsAdapter.ViewHo
             tvWorkoutTitle = itemView.findViewById(R.id.tvWorkoutTitle);
         }
 
-        public void bind(WorkoutPerformed workoutPerformed) throws ParseException {
+        public void bind(WorkoutPerformed workoutPerformed) throws ParseException, JSONException {
             Context tableContext = tlWorkouts.getContext();
 
             tvName.setText(workoutPerformed.getUser().getUsername());
@@ -92,8 +96,9 @@ public class WorkoutsAdapter extends RecyclerView.Adapter<WorkoutsAdapter.ViewHo
             if (image != null) {
                 Glide.with(mContext).load(workoutPerformed.getPFP().getUrl()).into(ivFeedPFP);
             }
-            tvWorkoutTitle.setText(workoutPerformed.getWorkout().getTitle());     // title of workout
-            queryComponents();  // get components from the database
+            String title = workoutPerformed.getWorkout().getTitle();
+            tvWorkoutTitle.setText(title);     // title of workout
+            queryComponents(title);  // get components from the database
 
             // populate rows with exercise info from data gathered from query
             for (int i = 0; i < mWorkoutComponents.size(); i++) {
@@ -104,15 +109,13 @@ public class WorkoutsAdapter extends RecyclerView.Adapter<WorkoutsAdapter.ViewHo
 
                 // create new row for each exercise
                 TableRow tbrow = new TableRow(tableContext);
-
+                // For each row, add 3 textviews for exercise name, sets, and reps
                 TextView tvExercise = new TextView(tableContext);
                 tvExercise.setText(name);
                 tbrow.addView(tvExercise);
-
                 TextView tvSets = new TextView(tableContext);
                 tvSets.setText(String.valueOf(sets));
                 tbrow.addView(tvSets);
-
                 TextView tvReps = new TextView(tableContext);
                 tvReps.setText(String.valueOf(reps));
                 tbrow.addView(tvReps);
@@ -122,13 +125,24 @@ public class WorkoutsAdapter extends RecyclerView.Adapter<WorkoutsAdapter.ViewHo
         }
     }
 
-    private void queryComponents() throws ParseException {
-        ParseQuery<WorkoutComponent> query = ParseQuery.getQuery(WorkoutComponent.class);
-        // includes specified data
-        query.include(WorkoutComponent.KEY_EXERCISE);
-        query.include(WorkoutComponent.KEY_REPS);
-        query.include(WorkoutComponent.KEY_SETS);
-        mWorkoutComponents = query.find();
-    }
+    private void queryComponents(String title) throws ParseException, JSONException {
+        mWorkoutComponents = new ArrayList<>();     // initialize empty list each time a query is called
 
+        ParseQuery<WorkoutTemplate> query = ParseQuery.getQuery(WorkoutTemplate.class);
+        // includes specified data
+        query.whereEqualTo(WorkoutTemplate.KEY_TITLE, title);   // sort with only those in the same workout
+        query.include(WorkoutTemplate.KEY_COMPONENTS);
+        mWorkoutTemplate = query.find();    // returns a list of one workoutTemplate
+        ParseQuery<WorkoutComponent> query2 = ParseQuery.getQuery(WorkoutComponent.class);
+        for (int i = 0; i < mWorkoutTemplate.get(0).getComponents().length(); i++) {
+            // grab ID to ensure only those with same id get shown
+            String id = mWorkoutTemplate.get(0).getComponents().getJSONObject(i).getString("objectId");
+            // add filter to grab only components in the specific workout
+            query2.whereEqualTo(WorkoutComponent.KEY_OBJECT_ID, id);
+            query2.include(WorkoutComponent.KEY_EXERCISE);
+            query2.include(WorkoutComponent.KEY_REPS);
+            query2.include(WorkoutComponent.KEY_SETS);
+            mWorkoutComponents.addAll(query2.find());  // add objects to list
+        }
+    }
 }
