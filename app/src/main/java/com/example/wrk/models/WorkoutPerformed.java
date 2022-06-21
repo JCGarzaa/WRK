@@ -20,6 +20,6 @@ public class WorkoutPerformed extends ParseObject {
     public void setStatus(boolean status) { put(KEY_ISPUBLIC, status); }
     public boolean getStatus() { return getBoolean(KEY_ISPUBLIC); }
 
-    public ParseFile getPFP() { return ParseUser.getCurrentUser().getParseFile(KEY_PFP);}
+    public ParseFile getPFP() { return getUser().getParseFile(KEY_PFP); }
 
 }

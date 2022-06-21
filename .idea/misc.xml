@@ -8,6 +8,7 @@
         <entry key="app/src/main/res/drawable/profile_icon.xml" value="0.11" />
         <entry key="app/src/main/res/layout/activity_login.xml" value="0.29010416666666666" />
         <entry key="app/src/main/res/layout/activity_main.xml" value="0.29010416666666666" />
+        <entry key="app/src/main/res/layout/activity_register.xml" value="0.412962962962963" />
         <entry key="app/src/main/res/layout/fragment_create.xml" value="0.412962962962963" />
         <entry key="app/src/main/res/layout/fragment_feed.xml" value="0.412962962962963" />
         <entry key="app/src/main/res/layout/fragment_profile.xml" value="0.412962962962963" />
