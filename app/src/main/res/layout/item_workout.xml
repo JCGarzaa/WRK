@@ -24,4 +24,60 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         tools:srcCompat="@tools:sample/avatars" />
+
+    <TableLayout
+        android:id="@+id/tlWorkouts"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="50dp"
+        android:layout_marginTop="4dp"
+        android:layout_marginEnd="50dp"
+        android:orientation="vertical"
+        android:stretchColumns="0"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/ivFeedPFP">
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <TextView
+                android:id="@+id/tvWorkoutTitle"
+                android:textAlignment="center"
+                android:textStyle="bold"
+                tools:text="Chest Day" />
+        </TableRow>
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <TextView
+                android:padding="3dp"
+                android:text="Exercise name"
+                android:textStyle="bold" />
+
+            <TextView
+                android:padding="3dp"
+                android:text="Sets"
+                android:textStyle="bold" />
+
+            <TextView
+                android:padding="3dp"
+                android:text="Reps"
+                android:textStyle="bold" />
+        </TableRow>
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"/>
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"/>
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"/>
+    </TableLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -22,4 +22,7 @@ public class WorkoutPerformed extends ParseObject {
 
     public ParseFile getPFP() { return getUser().getParseFile(KEY_PFP); }
 
+    public WorkoutTemplate getWorkout() { return (WorkoutTemplate) getParseObject(KEY_WORKOUT); }
+    public void setWorkout(WorkoutTemplate workout) { put(KEY_WORKOUT, workout); }
+
 }
