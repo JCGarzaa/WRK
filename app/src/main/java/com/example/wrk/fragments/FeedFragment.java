@@ -61,16 +61,16 @@ public class FeedFragment extends Fragment {
     }
 
     protected void queryWorkouts() {
-        ParseQuery<WorkoutPerformed> query = ParseQuery.getQuery(WorkoutPerformed.class);
+        ParseQuery<WorkoutPerformed> performedQuery = ParseQuery.getQuery(WorkoutPerformed.class);
         // includes specified data
-        query.include(WorkoutPerformed.KEY_USER);
-        query.include(WorkoutPerformed.KEY_WORKOUT);
+        performedQuery.include(WorkoutPerformed.KEY_USER);
+        performedQuery.include(WorkoutPerformed.KEY_WORKOUT);
         // limits number of items to generate
-        query.setLimit(5);
+        performedQuery.setLimit(5);
         // order by creation date (newest first)
-        query.addDescendingOrder("createdAt");
+        performedQuery.addDescendingOrder("createdAt");
         // async call for posts
-        query.findInBackground(new FindCallback<WorkoutPerformed>() {
+        performedQuery.findInBackground(new FindCallback<WorkoutPerformed>() {
             @Override
             public void done(List<WorkoutPerformed> workouts, ParseException e) {
                 if (e != null) {

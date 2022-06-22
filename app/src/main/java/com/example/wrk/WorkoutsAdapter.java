@@ -128,21 +128,21 @@ public class WorkoutsAdapter extends RecyclerView.Adapter<WorkoutsAdapter.ViewHo
     private void queryComponents(String title) throws ParseException, JSONException {
         mWorkoutComponents = new ArrayList<>();     // initialize empty list each time a query is called
 
-        ParseQuery<WorkoutTemplate> query = ParseQuery.getQuery(WorkoutTemplate.class);
+        ParseQuery<WorkoutTemplate> templateQuery = ParseQuery.getQuery(WorkoutTemplate.class);
         // includes specified data
-        query.whereEqualTo(WorkoutTemplate.KEY_TITLE, title);   // sort with only those in the same workout
-        query.include(WorkoutTemplate.KEY_COMPONENTS);
-        mWorkoutTemplate = query.find();    // returns a list of one workoutTemplate
-        ParseQuery<WorkoutComponent> query2 = ParseQuery.getQuery(WorkoutComponent.class);
+        templateQuery.whereEqualTo(WorkoutTemplate.KEY_TITLE, title);   // sort with only those in the same workout
+        templateQuery.include(WorkoutTemplate.KEY_COMPONENTS);
+        mWorkoutTemplate = templateQuery.find();    // returns a list of one workoutTemplate
+        ParseQuery<WorkoutComponent> componentQuery = ParseQuery.getQuery(WorkoutComponent.class);
         for (int i = 0; i < mWorkoutTemplate.get(0).getComponents().length(); i++) {
             // grab ID to ensure only those with same id get shown
             String id = mWorkoutTemplate.get(0).getComponents().getJSONObject(i).getString("objectId");
             // add filter to grab only components in the specific workout
-            query2.whereEqualTo(WorkoutComponent.KEY_OBJECT_ID, id);
-            query2.include(WorkoutComponent.KEY_EXERCISE);
-            query2.include(WorkoutComponent.KEY_REPS);
-            query2.include(WorkoutComponent.KEY_SETS);
-            mWorkoutComponents.addAll(query2.find());  // add objects to list
+            componentQuery.whereEqualTo(WorkoutComponent.KEY_OBJECT_ID, id);
+            componentQuery.include(WorkoutComponent.KEY_EXERCISE);
+            componentQuery.include(WorkoutComponent.KEY_REPS);
+            componentQuery.include(WorkoutComponent.KEY_SETS);
+            mWorkoutComponents.addAll(componentQuery.find());  // add objects to list
         }
     }
 }
