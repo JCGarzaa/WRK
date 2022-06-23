@@ -137,9 +137,7 @@ public class ProfileFragment extends Fragment {
 
         adapter = new ProfileAdapter(getContext(), workoutsPerformed);
         rvPrevWorkouts.setAdapter(adapter);
-
         queryWorkouts();
-
     }
 
     protected void queryWorkouts() {
