@@ -1,5 +1,6 @@
 package com.example.wrk.fragments;
 
+import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -15,6 +16,7 @@ import android.view.ViewGroup;
 
 import com.example.wrk.CreateAdapter;
 import com.example.wrk.R;
+import com.example.wrk.ScratchCreateActivity;
 import com.example.wrk.models.WorkoutPerformed;
 import com.example.wrk.models.WorkoutTemplate;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -54,12 +56,20 @@ public class CreateFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         savedTemplates = new ArrayList<>();
         fabCreate = view.findViewById(R.id.fabCreate);
+        fabCreate.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent i = new Intent(getContext(), ScratchCreateActivity.class);
+                startActivity(i);
+            }
+        });
 
         rvSavedWorkouts = view.findViewById(R.id.rvSavedWorkouts);
         adapter = new CreateAdapter(getContext(), savedTemplates);
         // link adapter and layout manager to RecyclerView
         rvSavedWorkouts.setAdapter(adapter);
         rvSavedWorkouts.setLayoutManager(new LinearLayoutManager(getContext()));
+
         queryTemplates();
     }
 
