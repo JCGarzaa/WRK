@@ -1,6 +1,10 @@
 package com.example.wrk;
 
 import android.content.Context;
+import android.text.Editable;
+import android.text.InputType;
+import android.text.TextWatcher;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -53,6 +57,9 @@ public class ScratchCreateAdapter extends RecyclerView.Adapter<ScratchCreateAdap
         private TableLayout tlComponents;
         private TextView tvExerciseName;
         private Button btnAddSet;
+        public TextView tvPrevWeight;
+        public EditText etWeight;
+        public EditText etReps;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -64,7 +71,7 @@ public class ScratchCreateAdapter extends RecyclerView.Adapter<ScratchCreateAdap
         public void bind(WorkoutComponent component) {
             Context tableContext = tlComponents.getContext();
             tvExerciseName.setText(component.getExercise().getName());
-            for (int i = 0; i < component.getSets(); i++) {
+            for (int i = 1; i <= component.getSets(); i++) {
                 // create new row for each set
                 TableRow tbrow = new TableRow(tableContext);
                 // For each row, add 2 TextViews for set number and previous weight, 2 editText for weight, and reps
@@ -73,17 +80,54 @@ public class ScratchCreateAdapter extends RecyclerView.Adapter<ScratchCreateAdap
                 tvSetNum.setText(String.valueOf(i));
                 tbrow.addView(tvSetNum);
                 // previous weight column
-                TextView tvPrevWeight = new TextView(tableContext);
+                tvPrevWeight = new TextView(tableContext);
                 tvPrevWeight.setText(String.valueOf(component.getWeight()));
                 tbrow.addView(tvPrevWeight);
                 // weight column
-                EditText etWeight = new EditText(tableContext);
+                etWeight = new EditText(tableContext);
+                etWeight.setInputType(InputType.TYPE_NUMBER_FLAG_DECIMAL);
                 etWeight.setHint(tvPrevWeight.getText());       // set a placeholder with previous weight
+                // update weight for database based on what user inputs
+                etWeight.addTextChangedListener(new TextWatcher() {
+                    @Override
+                    public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+                    }
+
+                    @Override
+                    public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+                    }
+
+                    @Override
+                    public void afterTextChanged(Editable s) {
+                        component.setWeight(Double.parseDouble(s.toString()));
+                    }
+                });
                 tbrow.addView(etWeight);
                 // reps column
-                EditText etReps = new EditText(tableContext);
-                etReps.setText(component.getReps());            // set a placeholder with previous reps
+                etReps = new EditText(tableContext);
+                etReps.setInputType(InputType.TYPE_CLASS_NUMBER);
+                etReps.setHint(String.valueOf(component.getReps()));            // set a placeholder with previous reps
+                // update reps for database based on what user inputs
+                etReps.addTextChangedListener(new TextWatcher() {
+                    @Override
+                    public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+                    }
+
+                    @Override
+                    public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+                    }
+
+                    @Override
+                    public void afterTextChanged(Editable s) {
+                        component.setReps(Integer.valueOf(s.toString()));
+                    }
+                });
                 tbrow.addView(etReps);
+                tlComponents.addView(tbrow);
             }
             btnAddSet.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -97,19 +141,24 @@ public class ScratchCreateAdapter extends RecyclerView.Adapter<ScratchCreateAdap
                     component.setSets(component.getSets() + 1);     // update number of sets for component
                     tbrow.addView(tvSetNum);
                     // previous weight column
-                    TextView tvPrevWeight = new TextView(tableContext);
-                    tvPrevWeight.setText(String.valueOf(component.getWeight()));
-                    tbrow.addView(tvPrevWeight);
+                    TextView tvPrevAmount = new TextView(tableContext);   // has to be different from tvPrevWeight so it doesn't display weight from current sets when adding sets
+                    tvPrevAmount.setText(tvPrevWeight.getText());
+                    tbrow.addView(tvPrevAmount);
                     // weight column
-                    EditText etWeight = new EditText(tableContext);
-                    etWeight.setHint(tvPrevWeight.getText());       // set a placeholder with previous weight
+                    etWeight = new EditText(tableContext);
+                    etWeight.setInputType(InputType.TYPE_NUMBER_FLAG_DECIMAL);
+                    etWeight.setText(String.valueOf(component.getWeight()));        // set a placeholder with weight from existing sets
                     tbrow.addView(etWeight);
                     // reps column
-                    EditText etReps = new EditText(tableContext);
-                    etReps.setText(component.getReps());            // set a placeholder with previous reps
+                    etReps = new EditText(tableContext);
+                    etReps.setInputType(InputType.TYPE_CLASS_NUMBER);
+                    etReps.setText(String.valueOf(component.getReps()));            // set a placeholder with reps from previous sets
                     tbrow.addView(etReps);
+
+                    tlComponents.addView(tbrow);
                 }
             });
+
         }
     }
 }

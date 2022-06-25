@@ -1,5 +1,6 @@
 package com.example.wrk;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.view.LayoutInflater;
@@ -16,18 +17,18 @@ import com.example.wrk.models.Exercise;
 import java.util.List;
 
 public class ExerciseListAdapter extends RecyclerView.Adapter<ExerciseListAdapter.ViewHolder> {
-    Context mContext;
+    Activity activity;
     List<Exercise> mExercises;
 
-    public ExerciseListAdapter(Context mContext, List<Exercise> mExercises) {
-        this.mContext = mContext;
+    public ExerciseListAdapter(Activity activity, List<Exercise> mExercises) {
         this.mExercises = mExercises;
+        this.activity = activity;
     }
 
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view  = LayoutInflater.from(mContext).inflate(R.layout.item_exercise, parent, false);
+        View view  = LayoutInflater.from(activity).inflate(R.layout.item_exercise, parent, false);
         return new ViewHolder(view);
     }
 
@@ -60,9 +61,10 @@ public class ExerciseListAdapter extends RecyclerView.Adapter<ExerciseListAdapte
             ibAdd.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Intent i = new Intent(mContext, ScratchCreateActivity.class);
+                    Intent i = new Intent(activity, ScratchCreateActivity.class);
                     i.putExtra("exercise", exercise);
-                    mContext.startActivity(i);
+                    activity.setResult(Activity.RESULT_OK, i);
+                    activity.finish();
                 }
             });
         }

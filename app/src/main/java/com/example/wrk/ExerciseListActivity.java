@@ -55,8 +55,11 @@ public class ExerciseListActivity extends AppCompatActivity {
                 // save received posts to list and notify adapter of new data
                 exerciseList.addAll(workouts);
                 adapter.notifyDataSetChanged();
+
             }
         });
+
+
     }
 
 
