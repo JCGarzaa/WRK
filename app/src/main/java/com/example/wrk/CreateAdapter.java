@@ -1,6 +1,7 @@
 package com.example.wrk;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -81,13 +82,7 @@ public class CreateAdapter extends RecyclerView.Adapter<CreateAdapter.ViewHolder
             Set<String> set = new HashSet<>(bodyParts);
             bodyParts.clear();
             bodyParts.addAll(set);
-
-            for (int i = 0; i < bodyParts.size(); i++) {
-                tvBodyParts.append(bodyParts.get(i));
-                if (i + 1 < bodyParts.size()) {
-                    tvBodyParts.append(", ");   // for formatting
-                }
-            }
+            tvBodyParts.append(String.join(", ", bodyParts));
         }
     }
 

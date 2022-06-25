@@ -18,6 +18,12 @@
         android:theme="@style/Theme.WRK"
         tools:targetApi="31">
         <activity
+            android:name=".ExerciseListActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ScratchCreateActivity"
+            android:exported="false" />
+        <activity
             android:name=".RegisterActivity"
             android:exported="false" />
         <activity
