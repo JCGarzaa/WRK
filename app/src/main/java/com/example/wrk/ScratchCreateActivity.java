@@ -1,5 +1,7 @@
 package com.example.wrk;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -15,10 +17,13 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.Toast;
 
+import com.example.wrk.models.Exercise;
 import com.example.wrk.models.WorkoutComponent;
 import com.example.wrk.models.WorkoutTemplate;
 import com.parse.ParseException;
 import com.parse.SaveCallback;
+
+import org.parceler.Parcels;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -53,7 +58,7 @@ public class ScratchCreateActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent i = new Intent(ScratchCreateActivity.this, ExerciseListActivity.class);
-                startActivity(i);
+                startActivityForResult(i, 1);
             }
         });
 
@@ -92,7 +97,7 @@ public class ScratchCreateActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 String title = etCreateWorkoutTitle.getText().toString();
-                if (!title.isEmpty()) {
+                if (title != null && !title.isEmpty()) {
                     if (mComponents.size() != 0) {
                         saveTemplate(title, mComponents);       // save template to database
                         finish();       // go back to create fragment
@@ -106,6 +111,27 @@ public class ScratchCreateActivity extends AppCompatActivity {
                 }
             }
         });
+    }
+
+    @Override
+    protected void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        if (requestCode == 1) {
+            if (resultCode == RESULT_OK) {
+                Exercise exercise = (Exercise) data.getParcelableExtra("exercise");
+                WorkoutComponent component = new WorkoutComponent();
+                component.setExercise(exercise);
+                component.setSets(1);
+                mComponents.add(component);
+                adapter.notifyItemInserted(mComponents.size());
+            }
+        }
+        super.onActivityResult(requestCode, resultCode, data);
     }
 
     private void saveTemplate(String title, ArrayList<WorkoutComponent> components) {

@@ -58,7 +58,4 @@ public class ExerciseListActivity extends AppCompatActivity {
             }
         });
     }
-
-
-
 }
