@@ -90,15 +90,9 @@ public class ScratchCreateAdapter extends RecyclerView.Adapter<ScratchCreateAdap
                 // update weight for database based on what user inputs
                 etWeight.addTextChangedListener(new TextWatcher() {
                     @Override
-                    public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-                    }
-
+                    public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
                     @Override
-                    public void onTextChanged(CharSequence s, int start, int before, int count) {
-
-                    }
-
+                    public void onTextChanged(CharSequence s, int start, int before, int count) {}
                     @Override
                     public void afterTextChanged(Editable s) {
                         component.setWeight(Double.parseDouble(s.toString()));
@@ -112,15 +106,9 @@ public class ScratchCreateAdapter extends RecyclerView.Adapter<ScratchCreateAdap
                 // update reps for database based on what user inputs
                 etReps.addTextChangedListener(new TextWatcher() {
                     @Override
-                    public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-                    }
-
+                    public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
                     @Override
-                    public void onTextChanged(CharSequence s, int start, int before, int count) {
-
-                    }
-
+                    public void onTextChanged(CharSequence s, int start, int before, int count) {}
                     @Override
                     public void afterTextChanged(Editable s) {
                         component.setReps(Integer.valueOf(s.toString()));
@@ -154,11 +142,9 @@ public class ScratchCreateAdapter extends RecyclerView.Adapter<ScratchCreateAdap
                     etReps.setInputType(InputType.TYPE_CLASS_NUMBER);
                     etReps.setText(String.valueOf(component.getReps()));            // set a placeholder with reps from previous sets
                     tbrow.addView(etReps);
-
                     tlComponents.addView(tbrow);
                 }
             });
-
         }
     }
 }
