@@ -1,5 +1,6 @@
 package com.example.wrk.fragments;
 
+import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 
@@ -8,12 +9,10 @@ import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
-import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.RoundedCorner;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -23,20 +22,16 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
+import com.example.wrk.GymMapsActivity;
 import com.example.wrk.MainActivity;
 import com.example.wrk.ProfileAdapter;
 import com.example.wrk.R;
-import com.example.wrk.WorkoutsAdapter;
-import com.example.wrk.models.WorkoutComponent;
 import com.example.wrk.models.WorkoutPerformed;
-import com.example.wrk.models.WorkoutTemplate;
 import com.parse.FindCallback;
 import com.parse.ParseException;
 import com.parse.ParseFile;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
-
-import org.json.JSONException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -54,7 +49,6 @@ public class ProfileFragment extends Fragment {
     private RecyclerView rvPrevWorkouts;
     protected ProfileAdapter adapter;
     protected List<WorkoutPerformed> workoutsPerformed;
-
 
     public ProfileFragment() {
         // Required empty public constructor
@@ -123,18 +117,16 @@ public class ProfileFragment extends Fragment {
         ibGymsNearMe.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                Intent i = new Intent(getContext(), GymMapsActivity.class);
+                startActivity(i);
             }
         });
-
         rvPrevWorkouts = view.findViewById(R.id.rvPosts);
         rvPrevWorkouts.setHasFixedSize(true);      // allows for optimizations
         workoutsPerformed = new ArrayList<>();
-
         // 2 column grid layout
         final GridLayoutManager layout = new GridLayoutManager(getContext(), 2);
         rvPrevWorkouts.setLayoutManager(layout);
-
         adapter = new ProfileAdapter(getContext(), workoutsPerformed);
         rvPrevWorkouts.setAdapter(adapter);
         queryWorkouts();

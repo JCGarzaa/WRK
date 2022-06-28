@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">WRK</string>
+    <string name="title_activity_gyms_map">GymsMapActivity</string>
+    <string name="title_activity_gyms_maps">GymsMapsActivity</string>
+    <string name="title_activity_maps">MapsActivity</string>
+    <string name="title_activity_gym_maps">GymMapsActivity</string>
 </resources>
