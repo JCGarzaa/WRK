@@ -21,8 +21,11 @@ import com.example.wrk.models.Exercise;
 import com.example.wrk.models.WorkoutComponent;
 import com.example.wrk.models.WorkoutTemplate;
 import com.parse.ParseException;
+import com.parse.ParseQuery;
 import com.parse.SaveCallback;
 
+import org.json.JSONArray;
+import org.json.JSONException;
 import org.parceler.Parcels;
 
 import java.util.ArrayList;
@@ -37,6 +40,7 @@ public class ScratchCreateActivity extends AppCompatActivity {
     ArrayList<WorkoutComponent> mComponents;
     RecyclerView rvComponents;
     ScratchCreateAdapter adapter;
+    WorkoutTemplate workoutTemplate;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,8 +52,17 @@ public class ScratchCreateActivity extends AppCompatActivity {
         ibAddExercise = findViewById(R.id.ibAddExercise);
         btnSave = findViewById(R.id.btnSave);
         rvComponents = findViewById(R.id.rvCreateComponents);
-
         mComponents = new ArrayList<>();
+
+        workoutTemplate = (WorkoutTemplate) Parcels.unwrap(getIntent().getParcelableExtra("template"));     // receive existing template after edit button clicked
+        if (workoutTemplate != null) { // if user clicks to edit existing workout, template will not be null
+            try {
+                queryComponents(workoutTemplate);
+                etCreateWorkoutTitle.setText(workoutTemplate.getTitle());               // set title to existing workout title
+            } catch (JSONException | ParseException e) {
+                e.printStackTrace();
+            }
+        }
         adapter = new ScratchCreateAdapter(this, mComponents);
         rvComponents.setAdapter(adapter);
         rvComponents.setLayoutManager(new LinearLayoutManager(this));
@@ -73,6 +86,13 @@ public class ScratchCreateActivity extends AppCompatActivity {
                 builder.setPositiveButton("DELETE", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
+                        if (workoutTemplate != null) {
+                            try {
+                                workoutTemplate.delete();       // remove template from database
+                            } catch (ParseException e) {
+                                e.printStackTrace();
+                            }
+                        }
                         finish();
                     }
                 });
@@ -99,7 +119,15 @@ public class ScratchCreateActivity extends AppCompatActivity {
                 String title = etCreateWorkoutTitle.getText().toString();
                 if (title != null && !title.isEmpty()) {
                     if (mComponents.size() != 0) {
-                        saveTemplate(title, mComponents);       // save template to database
+                        try {
+                            if (workoutTemplate != null) {
+                                updateTemplate(workoutTemplate, title, mComponents);  // update template in database
+                            } else {
+                                saveNewTemplate(title, mComponents);       // save template to database
+                            }
+                        } catch (ParseException e) {
+                            e.printStackTrace();
+                        }
                         finish();       // go back to create fragment
                     }
                     else {
@@ -116,7 +144,6 @@ public class ScratchCreateActivity extends AppCompatActivity {
     @Override
     protected void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
-
     }
 
     @Override
@@ -134,7 +161,20 @@ public class ScratchCreateActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
     }
 
-    private void saveTemplate(String title, ArrayList<WorkoutComponent> components) {
+    private void updateTemplate(WorkoutTemplate workoutTemplate, String title, ArrayList<WorkoutComponent> components) throws ParseException {
+        workoutTemplate.setTitle(title);                // for if title has been changed
+        workoutTemplate.setComponents(components);      // for if components changed
+        workoutTemplate.saveInBackground(new SaveCallback() {
+            @Override
+            public void done(ParseException e) {
+                if (e != null) {
+                    Toast.makeText(ScratchCreateActivity.this, "Error while updating template", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+    }
+
+    private void saveNewTemplate(String title, ArrayList<WorkoutComponent> components) throws ParseException {
         WorkoutTemplate template = new WorkoutTemplate();
         template.setTitle(title);
         template.setComponents(components);
@@ -143,9 +183,24 @@ public class ScratchCreateActivity extends AppCompatActivity {
             public void done(ParseException e) {
                 if (e != null) {
                     Toast.makeText(ScratchCreateActivity.this, "Error while saving template", Toast.LENGTH_SHORT).show();
-                    return;
                 }
             }
         });
+    }
+
+    private void queryComponents(WorkoutTemplate template) throws ParseException, JSONException {
+        mComponents = new ArrayList<>();     // initialize empty list each time a query is called
+        JSONArray componentArray = template.getComponents();
+        ParseQuery<WorkoutComponent> componentQuery = ParseQuery.getQuery(WorkoutComponent.class);
+        for (int i = 0; i < componentArray.length(); i++) {
+            // grab ID to ensure only those with same id get shown
+            String id = componentArray.getJSONObject(i).getString("objectId");
+            // add filter to grab only components in the specific workout
+            componentQuery.whereEqualTo(WorkoutComponent.KEY_OBJECT_ID, id);
+            componentQuery.include(WorkoutComponent.KEY_EXERCISE);
+            componentQuery.include(WorkoutComponent.KEY_REPS);
+            componentQuery.include(WorkoutComponent.KEY_SETS);
+            mComponents.addAll(componentQuery.find());  // add objects to list
+        }
     }
 }

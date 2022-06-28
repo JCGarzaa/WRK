@@ -1,10 +1,12 @@
 package com.example.wrk;
 
 import android.content.Context;
+import android.content.Intent;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -18,6 +20,7 @@ import com.parse.ParseQuery;
 
 import org.json.JSONArray;
 import org.json.JSONException;
+import org.parceler.Parcels;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -60,11 +63,15 @@ public class CreateAdapter extends RecyclerView.Adapter<CreateAdapter.ViewHolder
     public class ViewHolder extends RecyclerView.ViewHolder {
         private TextView tvTemplateTitle;
         private TextView tvBodyParts;
+        private ImageButton ibStart;
+        private ImageButton ibEdit;
 
         public ViewHolder(View itemView, final Context context) {
             super(itemView);
             tvTemplateTitle = itemView.findViewById(R.id.tvTemplateTitle);
             tvBodyParts = itemView.findViewById(R.id.tvBodyParts);
+            ibStart = itemView.findViewById(R.id.ibStart);
+            ibEdit = itemView.findViewById(R.id.ibEdit);
         }
 
         public void bind(WorkoutTemplate template) throws JSONException, ParseException {
@@ -83,6 +90,15 @@ public class CreateAdapter extends RecyclerView.Adapter<CreateAdapter.ViewHolder
             bodyParts.clear();
             bodyParts.addAll(set);
             tvBodyParts.append(String.join(", ", bodyParts));
+
+            ibEdit.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent i = new Intent(mContext, ScratchCreateActivity.class);
+                    i.putExtra("template", Parcels.wrap(template));
+                    mContext.startActivity(i);
+                }
+            });
         }
     }
 

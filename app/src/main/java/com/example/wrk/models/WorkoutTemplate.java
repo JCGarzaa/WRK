@@ -14,6 +14,8 @@ public class WorkoutTemplate extends ParseObject {
     public static final String KEY_TITLE = "title";
     public static final String KEY_COMPONENTS = "components";
 
+    public WorkoutTemplate() {} // required empty constructor for parceler
+
     public String getTitle() { return getString(KEY_TITLE); }
     public void setTitle(String title) { put(KEY_TITLE, title); }
 
@@ -21,5 +23,4 @@ public class WorkoutTemplate extends ParseObject {
     public void setComponents(ArrayList<WorkoutComponent> components) {
         put(KEY_COMPONENTS, components);
     }
-
 }
