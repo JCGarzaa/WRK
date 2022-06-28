@@ -29,7 +29,6 @@ import org.json.JSONException;
 import org.parceler.Parcels;
 
 import java.util.ArrayList;
-import java.util.List;
 
 // activity is used for creating a workout from scratch
 public class ScratchCreateActivity extends AppCompatActivity {
