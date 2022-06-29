@@ -85,7 +85,7 @@ public class ScratchCreateAdapter extends RecyclerView.Adapter<ScratchCreateAdap
                 tbrow.addView(tvPrevWeight);
                 // weight column
                 etWeight = new EditText(tableContext);
-                etWeight.setInputType(InputType.TYPE_NUMBER_FLAG_DECIMAL);
+                etWeight.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL);
                 etWeight.setHint(tvPrevWeight.getText());       // set a placeholder with previous weight
                 // update weight for database based on what user inputs
                 etWeight.addTextChangedListener(new TextWatcher() {
@@ -95,7 +95,13 @@ public class ScratchCreateAdapter extends RecyclerView.Adapter<ScratchCreateAdap
                     public void onTextChanged(CharSequence s, int start, int before, int count) {}
                     @Override
                     public void afterTextChanged(Editable s) {
-                        component.setWeight(Double.parseDouble(s.toString()));
+                        try {
+                            component.setWeight(Double.parseDouble(s.toString()));
+                        }
+                        catch (NumberFormatException n) {
+                            etWeight.setText("0.0");
+                        }
+
                     }
                 });
                 tbrow.addView(etWeight);
@@ -134,7 +140,7 @@ public class ScratchCreateAdapter extends RecyclerView.Adapter<ScratchCreateAdap
                     tbrow.addView(tvPrevAmount);
                     // weight column
                     etWeight = new EditText(tableContext);
-                    etWeight.setInputType(InputType.TYPE_NUMBER_FLAG_DECIMAL);
+                    etWeight.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL);
                     etWeight.setText(String.valueOf(component.getWeight()));        // set a placeholder with weight from existing sets
                     tbrow.addView(etWeight);
                     // reps column
