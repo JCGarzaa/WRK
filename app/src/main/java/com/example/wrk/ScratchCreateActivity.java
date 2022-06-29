@@ -60,7 +60,6 @@ public class ScratchCreateActivity extends AppCompatActivity {
         mComponents = new ArrayList<>();
         workoutsPerformed = new ArrayList<>();
 
-
         workoutTemplate = Parcels.unwrap(getIntent().getParcelableExtra("template"));     // receive existing template after edit button clicked
         if (workoutTemplate != null) { // if user clicks to edit existing workout, template will not be null
             try {
@@ -220,12 +219,11 @@ public class ScratchCreateActivity extends AppCompatActivity {
     }
 
     private void queryWorkouts() {
+        workoutsPerformed.clear();
         ParseQuery<WorkoutPerformed> performedQuery = ParseQuery.getQuery(WorkoutPerformed.class);
         // includes specified data
         performedQuery.include(WorkoutPerformed.KEY_USER);
         performedQuery.include(WorkoutPerformed.KEY_WORKOUT);
-        // limits number of items to generate
-        performedQuery.setLimit(6);
         // order by creation date (newest first)
         performedQuery.addDescendingOrder("createdAt");
         // async call for posts
@@ -236,9 +234,8 @@ public class ScratchCreateActivity extends AppCompatActivity {
                     Log.e("ScratchCreateActivity", "Error with fetching workouts. ", e);
                     return;
                 }
-                // save received posts to list and notify adapter of new data
+                // save received posts to list
                 workoutsPerformed.addAll(workouts);
-                adapter.notifyDataSetChanged();
             }
         });
     }
