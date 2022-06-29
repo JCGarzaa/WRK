@@ -23,6 +23,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.parse.FindCallback;
 import com.parse.ParseException;
 import com.parse.ParseQuery;
+import com.parse.ParseUser;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -76,8 +77,10 @@ public class CreateFragment extends Fragment {
     protected void queryTemplates() {
         ParseQuery<WorkoutTemplate> templatesQuery = ParseQuery.getQuery(WorkoutTemplate.class);
         // includes specified data
+        templatesQuery.whereEqualTo(WorkoutTemplate.KEY_SAVED_BY, ParseUser.getCurrentUser());  // only templates saved by current user
         templatesQuery.include(WorkoutTemplate.KEY_TITLE);
         templatesQuery.include(WorkoutTemplate.KEY_COMPONENTS);
+        templatesQuery.include(WorkoutTemplate.KEY_SAVED_BY);
         // limits number of items to generate
         templatesQuery.setLimit(6);
         // order by creation date (newest first)

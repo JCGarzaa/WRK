@@ -178,6 +178,7 @@ public class ScratchCreateActivity extends AppCompatActivity {
     private void updateTemplate(WorkoutTemplate workoutTemplate, String title, ArrayList<WorkoutComponent> components) throws ParseException {
         workoutTemplate.setTitle(title);                // for if title has been changed
         workoutTemplate.setComponents(components);      // for if components changed
+        workoutTemplate.saveUserTemplate();             // check if user is already in savedBy list in database
         workoutTemplate.saveInBackground(new SaveCallback() {
             @Override
             public void done(ParseException e) {
@@ -189,9 +190,12 @@ public class ScratchCreateActivity extends AppCompatActivity {
     }
 
     private void saveNewTemplate(String title, ArrayList<WorkoutComponent> components) throws ParseException {
+        List<ParseUser> savedBy = new ArrayList<>();
+        savedBy.add(ParseUser.getCurrentUser());
         WorkoutTemplate template = new WorkoutTemplate();
         template.setTitle(title);
         template.setComponents(components);
+        template.setSavedBy(savedBy);
         template.saveInBackground(new SaveCallback() {
             @Override
             public void done(ParseException e) {
