@@ -1,0 +1,110 @@
+package com.example.wrk.fragments;
+
+import android.os.Bundle;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.DialogFragment;
+
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.RadioGroup;
+import android.widget.Toast;
+
+import com.example.wrk.R;
+import com.example.wrk.models.Exercise;
+
+public class CreateExerciseDialogFragment extends DialogFragment {
+
+    private EditText etCreateExerciseName;
+    private Button btnCreateExercise;
+    private String selectedBodyPart;
+    private RadioGroup radioGroup;
+
+    public CreateExerciseDialogFragment() {
+        // Required empty public constructor
+    }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+    }
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        // Inflate the layout for this fragment
+        return inflater.inflate(R.layout.fragment_create_exercise_dialog, container, false);
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        etCreateExerciseName = view.findViewById(R.id.etCreateExerciseName);
+        btnCreateExercise = view.findViewById(R.id.btnCreateExercise);
+        radioGroup = view.findViewById(R.id.radioGroup);
+        btnCreateExercise.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // save new exercise to database
+                String exerciseName = etCreateExerciseName.getText().toString();
+                Exercise exercise = new Exercise();
+                if (!exerciseName.isEmpty()) {
+                    exercise.setName(exerciseName);
+                    if (selectedBodyPart != null && !selectedBodyPart.isEmpty()) {
+                        exercise.setBodyPart(selectedBodyPart);
+                        exercise.saveInBackground();
+                        dismiss();      // return to parent activity
+                    }
+                    else {
+                        Toast.makeText(getContext(), "Please select a body part.", Toast.LENGTH_SHORT).show();
+                    }
+                }
+                else {
+                    Toast.makeText(getContext(), "Please enter a name.", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+        // assign selectedBodyPart based on button selected
+        radioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+                switch(checkedId) {
+                    case R.id.radioArms:
+                        selectedBodyPart = getString(R.string.arms);
+                        break;
+                    case R.id.radioBack:
+                        selectedBodyPart = getString(R.string.back);
+                        break;
+                    case R.id.radioCore:
+                        selectedBodyPart = getString(R.string.core);
+                        break;
+                    case R.id.radioChest:
+                        selectedBodyPart = getString(R.string.chest);
+
+                    case R.id.radioCalves:
+                        selectedBodyPart = getString(R.string.calves);
+                        break;
+                    case R.id.radioLegs:
+                        selectedBodyPart = getString(R.string.legs);
+                        break;
+                    case R.id.radioShoulders:
+                        selectedBodyPart = getString(R.string.shoulders);
+                        break;
+                    case R.id.radioCardio:
+                        selectedBodyPart = getString(R.string.cardio);
+                        break;
+                    case R.id.radioFullBody:
+                        selectedBodyPart = getString(R.string.fullbody);
+                        break;
+                    case R.id.radioCalisthenics:
+                        selectedBodyPart = getString(R.string.calisthenics);
+                        break;
+                }
+            }
+        });
+    }
+}

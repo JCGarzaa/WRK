@@ -1,7 +1,14 @@
 <resources>
     <string name="app_name">WRK</string>
-    <string name="title_activity_gyms_map">GymsMapActivity</string>
-    <string name="title_activity_gyms_maps">GymsMapsActivity</string>
-    <string name="title_activity_maps">MapsActivity</string>
     <string name="title_activity_gym_maps">GymMapsActivity</string>
+    <string name="arms">Arms</string>
+    <string name="back">Back</string>
+    <string name="core">Core</string>
+    <string name="chest">Chest</string>
+    <string name="calves">Calves</string>
+    <string name="legs">Legs</string>
+    <string name="shoulders">Shoulders</string>
+    <string name="cardio">Cardio</string>
+    <string name="fullbody">Full Body</string>
+    <string name="calisthenics">Calisthenics</string>
 </resources>
