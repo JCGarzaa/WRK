@@ -94,17 +94,18 @@ public class ScratchCreateActivity extends AppCompatActivity {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         if (workoutTemplate != null) {
-                            try {
+                            // unsave template for user so that it deletes from their list
+                            workoutTemplate.unsaveTemplate();
+                            if (workoutTemplate.getSavedBy().isEmpty()) {
                                 // cannot delete template if others have posted with this workout
                                 for (int i = 0; i < workoutsPerformed.size(); i++) {
                                     if (workoutsPerformed.get(i).getWorkout().getObjectId().equals(workoutTemplate.getObjectId())) {
-                                        Toast.makeText(ScratchCreateActivity.this, "Deleting this template will interfere with other's posts.", Toast.LENGTH_SHORT).show();
+                                        finish();
                                         return;
                                     }
                                 }
-                                workoutTemplate.delete();       // remove template from database
-                            } catch (ParseException e) {
-                                e.printStackTrace();
+                                // only delete template entirely if no one has made a post with this template
+                                workoutTemplate.deleteInBackground();
                             }
                         }
                         finish();
