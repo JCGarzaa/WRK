@@ -11,6 +11,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -19,9 +20,12 @@ import android.widget.Toast;
 
 import com.example.wrk.models.Exercise;
 import com.example.wrk.models.WorkoutComponent;
+import com.example.wrk.models.WorkoutPerformed;
 import com.example.wrk.models.WorkoutTemplate;
+import com.parse.FindCallback;
 import com.parse.ParseException;
 import com.parse.ParseQuery;
+import com.parse.ParseUser;
 import com.parse.SaveCallback;
 
 import org.json.JSONArray;
@@ -41,6 +45,7 @@ public class ScratchCreateActivity extends AppCompatActivity {
     RecyclerView rvComponents;
     ScratchCreateAdapter adapter;
     WorkoutTemplate workoutTemplate;
+    List<WorkoutPerformed> workoutsPerformed;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,8 +58,9 @@ public class ScratchCreateActivity extends AppCompatActivity {
         btnSave = findViewById(R.id.btnSave);
         rvComponents = findViewById(R.id.rvCreateComponents);
         mComponents = new ArrayList<>();
+        workoutsPerformed = new ArrayList<>();
 
-        workoutTemplate = (WorkoutTemplate) Parcels.unwrap(getIntent().getParcelableExtra("template"));     // receive existing template after edit button clicked
+        workoutTemplate = Parcels.unwrap(getIntent().getParcelableExtra("template"));     // receive existing template after edit button clicked
         if (workoutTemplate != null) { // if user clicks to edit existing workout, template will not be null
             try {
                 queryComponents(workoutTemplate);
@@ -79,6 +85,7 @@ public class ScratchCreateActivity extends AppCompatActivity {
             // Create an alert dialog to confirm deletion
             @Override
             public void onClick(View v) {
+                queryWorkouts();
                 AlertDialog.Builder builder = new AlertDialog.Builder(ScratchCreateActivity.this);
                 AlertDialog dialog;
                 builder.setTitle("Delete Template");
@@ -88,6 +95,13 @@ public class ScratchCreateActivity extends AppCompatActivity {
                     public void onClick(DialogInterface dialog, int which) {
                         if (workoutTemplate != null) {
                             try {
+                                // cannot delete template if others have posted with this workout
+                                for (int i = 0; i < workoutsPerformed.size(); i++) {
+                                    if (workoutsPerformed.get(i).getWorkout().getObjectId().equals(workoutTemplate.getObjectId())) {
+                                        Toast.makeText(ScratchCreateActivity.this, "Deleting this template will interfere with other's posts.", Toast.LENGTH_SHORT).show();
+                                        return;
+                                    }
+                                }
                                 workoutTemplate.delete();       // remove template from database
                             } catch (ParseException e) {
                                 e.printStackTrace();
@@ -150,7 +164,7 @@ public class ScratchCreateActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         if (requestCode == 1) {
             if (resultCode == RESULT_OK) {
-                Exercise exercise = (Exercise) data.getParcelableExtra("exercise");
+                Exercise exercise = data.getParcelableExtra("exercise");
                 WorkoutComponent component = new WorkoutComponent();
                 component.setExercise(exercise);
                 component.setSets(1);
@@ -202,5 +216,27 @@ public class ScratchCreateActivity extends AppCompatActivity {
             componentQuery.include(WorkoutComponent.KEY_SETS);
             mComponents.addAll(componentQuery.find());  // add objects to list
         }
+    }
+
+    private void queryWorkouts() {
+        workoutsPerformed.clear();
+        ParseQuery<WorkoutPerformed> performedQuery = ParseQuery.getQuery(WorkoutPerformed.class);
+        // includes specified data
+        performedQuery.include(WorkoutPerformed.KEY_USER);
+        performedQuery.include(WorkoutPerformed.KEY_WORKOUT);
+        // order by creation date (newest first)
+        performedQuery.addDescendingOrder("createdAt");
+        // async call for posts
+        performedQuery.findInBackground(new FindCallback<WorkoutPerformed>() {
+            @Override
+            public void done(List<WorkoutPerformed> workouts, ParseException e) {
+                if (e != null) {
+                    Log.e("ScratchCreateActivity", "Error with fetching workouts. ", e);
+                    return;
+                }
+                // save received posts to list
+                workoutsPerformed.addAll(workouts);
+            }
+        });
     }
 }

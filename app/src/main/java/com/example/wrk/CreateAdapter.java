@@ -99,6 +99,14 @@ public class CreateAdapter extends RecyclerView.Adapter<CreateAdapter.ViewHolder
                     mContext.startActivity(i);
                 }
             });
+            ibStart.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent i = new Intent(mContext, TrackerActivity.class);
+                    i.putExtra("template", Parcels.wrap(template));
+                    mContext.startActivity(i);
+                }
+            });
         }
     }
 
