@@ -16,6 +16,12 @@ import android.widget.Toast;
 
 import com.example.wrk.R;
 import com.example.wrk.models.Exercise;
+import com.parse.FindCallback;
+import com.parse.ParseException;
+import com.parse.ParseQuery;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class CreateExerciseDialogFragment extends DialogFragment {
 
@@ -23,6 +29,7 @@ public class CreateExerciseDialogFragment extends DialogFragment {
     private Button btnCreateExercise;
     private String selectedBodyPart;
     private RadioGroup radioGroup;
+    private List<Exercise> exerciseList;
 
     public CreateExerciseDialogFragment() {
         // Required empty public constructor
@@ -43,6 +50,8 @@ public class CreateExerciseDialogFragment extends DialogFragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        exerciseList = new ArrayList<>();
+        queryExercises();
         etCreateExerciseName = view.findViewById(R.id.etCreateExerciseName);
         btnCreateExercise = view.findViewById(R.id.btnCreateExercise);
         radioGroup = view.findViewById(R.id.radioGroup);
@@ -55,6 +64,13 @@ public class CreateExerciseDialogFragment extends DialogFragment {
                 if (!exerciseName.isEmpty()) {
                     exercise.setName(exerciseName);
                     if (selectedBodyPart != null && !selectedBodyPart.isEmpty()) {
+                        // prevent duplicates from being created
+                        for (int i = 0; i < exerciseList.size(); i++) {
+                            if (exerciseList.get(i).getName().equals(exerciseName)) {
+                                Toast.makeText(getContext(), "Exercise already exists.", Toast.LENGTH_SHORT).show();
+                                return;
+                            }
+                        }
                         exercise.setBodyPart(selectedBodyPart);
                         exercise.saveInBackground();
                         dismiss();      // return to parent activity
@@ -104,6 +120,28 @@ public class CreateExerciseDialogFragment extends DialogFragment {
                         selectedBodyPart = getString(R.string.calisthenics);
                         break;
                 }
+            }
+        });
+    }
+
+    protected void queryExercises() {
+        ParseQuery<Exercise> exerciseQuery = ParseQuery.getQuery(Exercise.class);
+        // includes specified data
+        exerciseQuery.include(Exercise.KEY_NAME);
+        exerciseQuery.include(Exercise.KEY_BODYPART);
+        // limits number of items to generate
+        exerciseQuery.setLimit(10);
+        // alphabetical order
+        exerciseQuery.addAscendingOrder(Exercise.KEY_NAME);
+        // async call for exercises
+        exerciseQuery.findInBackground(new FindCallback<Exercise>() {
+            @Override
+            public void done(List<Exercise> workouts, ParseException e) {
+                if (e != null) {
+                    return;
+                }
+                // save received posts to list and notify adapter of new data
+                exerciseList.addAll(workouts);
             }
         });
     }
