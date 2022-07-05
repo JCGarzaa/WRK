@@ -40,6 +40,7 @@ public class ProfileFragment extends Fragment {
     public static final String TAG = "ProfileFragment";
 
     private MainActivity mainActivity;
+    private ParseUser user;
     private ImageView ivProfilePicture;
     private Button btnLogout;
     private TextView tvProfileName;
@@ -54,8 +55,9 @@ public class ProfileFragment extends Fragment {
         // Required empty public constructor
     }
 
-    public ProfileFragment(MainActivity mainActivity) {
+    public ProfileFragment(MainActivity mainActivity, ParseUser user) {
         this.mainActivity = mainActivity;
+        this.user = user;
     }
 
     @Override
@@ -77,7 +79,7 @@ public class ProfileFragment extends Fragment {
 
         ivProfilePicture = view.findViewById(R.id.ivProfilePicture);
 
-        ParseFile file = ParseUser.getCurrentUser().getParseFile("profilePic");
+        ParseFile file = user.getParseFile("profilePic");
         // check if there is a profile picture that the user has
         if (file != null) {
             Glide.with(getContext())
@@ -96,13 +98,13 @@ public class ProfileFragment extends Fragment {
         }
 
         tvProfileName = view.findViewById(R.id.tvProfileName);
-        tvProfileName.setText(ParseUser.getCurrentUser().getString("name"));
+        tvProfileName.setText(user.getString("name"));
 
         tvProfileUsername = view.findViewById(R.id.tvProfileUsername);
-        tvProfileUsername.setText(ParseUser.getCurrentUser().getUsername());
+        tvProfileUsername.setText(user.getUsername());
 
         tvDailyStreak = view.findViewById(R.id.tvDailyStreak);
-        tvDailyStreak.setText(String.valueOf(ParseUser.getCurrentUser().getInt("streak")));
+        tvDailyStreak.setText(String.valueOf(user.getInt("streak")));
 
         btnLogout = view.findViewById(R.id.btnLogout);
         btnLogout.setOnClickListener(new View.OnClickListener() {
@@ -135,7 +137,7 @@ public class ProfileFragment extends Fragment {
     protected void queryWorkouts() {
         ParseQuery<WorkoutPerformed> performedQuery = ParseQuery.getQuery(WorkoutPerformed.class);
         // includes specified data
-        performedQuery.whereEqualTo(WorkoutPerformed.KEY_USER, ParseUser.getCurrentUser());
+        performedQuery.whereEqualTo(WorkoutPerformed.KEY_USER, user);
         performedQuery.include(WorkoutPerformed.KEY_USER);
         performedQuery.include(WorkoutPerformed.KEY_WORKOUT);
         // limits number of items to generate

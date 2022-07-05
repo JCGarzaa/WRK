@@ -13,6 +13,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.example.wrk.MainActivity;
 import com.example.wrk.R;
 import com.example.wrk.models.WorkoutPerformed;
 import com.example.wrk.WorkoutsAdapter;
@@ -54,7 +55,7 @@ public class FeedFragment extends Fragment {
         rvWorkouts = view.findViewById(R.id.rvWorkoutsCompleted);
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
         workoutsPerformed = new ArrayList<>();
-        adapter = new WorkoutsAdapter(getContext(), workoutsPerformed);
+        adapter = new WorkoutsAdapter((MainActivity) getContext(), workoutsPerformed);
         rvWorkouts.setLayoutManager(layoutManager);
         rvWorkouts.setAdapter(adapter);
         queryWorkouts();
