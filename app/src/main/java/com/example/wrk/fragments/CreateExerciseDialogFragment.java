@@ -100,7 +100,7 @@ public class CreateExerciseDialogFragment extends DialogFragment {
                         break;
                     case R.id.radioChest:
                         selectedBodyPart = getString(R.string.chest);
-
+                        break;
                     case R.id.radioCalves:
                         selectedBodyPart = getString(R.string.calves);
                         break;

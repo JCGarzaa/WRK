@@ -98,9 +98,7 @@ public class ScratchCreateAdapter extends RecyclerView.Adapter<ScratchCreateAdap
                         try {
                             component.setWeight(Double.parseDouble(s.toString()));
                         }
-                        catch (NumberFormatException n) {
-                            etWeight.setText("0.0");
-                        }
+                        catch (NumberFormatException n) {}
 
                     }
                 });
@@ -117,7 +115,10 @@ public class ScratchCreateAdapter extends RecyclerView.Adapter<ScratchCreateAdap
                     public void onTextChanged(CharSequence s, int start, int before, int count) {}
                     @Override
                     public void afterTextChanged(Editable s) {
-                        component.setReps(Integer.valueOf(s.toString()));
+                        try {
+                            component.setReps(Integer.valueOf(s.toString()));
+                        }
+                        catch (NumberFormatException n) {}
                     }
                 });
                 tbrow.addView(etReps);
