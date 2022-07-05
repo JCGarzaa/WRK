@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".fragments.CreateExerciseDialogFragment">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <EditText
+            android:id="@+id/etCreateExerciseName"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="8dp"
+            android:hint="Exercise name"
+            android:inputType="textPersonName"
+            android:minHeight="48dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <Button
+            android:id="@+id/btnCreateExercise"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="16dp"
+            android:text="Create"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="1.0"
+            app:layout_constraintStart_toEndOf="@+id/etCreateExerciseName"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <RadioGroup
+            android:id="@+id/radioGroup"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="16dp"
+            android:orientation="vertical"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/btnCreateExercise">
+
+            <RadioButton
+                android:id="@+id/radioArms"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/arms" />
+
+            <RadioButton
+                android:id="@+id/radioBack"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/back" />
+
+            <RadioButton
+                android:id="@+id/radioCore"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/core" />
+
+            <RadioButton
+                android:id="@+id/radioChest"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/chest" />
+
+            <RadioButton
+                android:id="@+id/radioCalves"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/calves" />
+
+            <RadioButton
+                android:id="@+id/radioLegs"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/legs" />
+
+            <RadioButton
+                android:id="@+id/radioShoulders"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/shoulders" />
+
+            <RadioButton
+                android:id="@+id/radioCardio"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/cardio" />
+
+            <RadioButton
+                android:id="@+id/radioFullBody"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/fullbody" />
+
+            <RadioButton
+                android:id="@+id/radioCalisthenics"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/calisthenics" />
+
+        </RadioGroup>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</FrameLayout>

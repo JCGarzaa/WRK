@@ -94,17 +94,18 @@ public class ScratchCreateActivity extends AppCompatActivity {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         if (workoutTemplate != null) {
-                            try {
+                            // unsave template for user so that it deletes from their list
+                            workoutTemplate.unsaveTemplate();
+                            if (workoutTemplate.getSavedBy().isEmpty()) {
                                 // cannot delete template if others have posted with this workout
                                 for (int i = 0; i < workoutsPerformed.size(); i++) {
                                     if (workoutsPerformed.get(i).getWorkout().getObjectId().equals(workoutTemplate.getObjectId())) {
-                                        Toast.makeText(ScratchCreateActivity.this, "Deleting this template will interfere with other's posts.", Toast.LENGTH_SHORT).show();
+                                        finish();
                                         return;
                                     }
                                 }
-                                workoutTemplate.delete();       // remove template from database
-                            } catch (ParseException e) {
-                                e.printStackTrace();
+                                // only delete template entirely if no one has made a post with this template
+                                workoutTemplate.deleteInBackground();
                             }
                         }
                         finish();
@@ -178,6 +179,7 @@ public class ScratchCreateActivity extends AppCompatActivity {
     private void updateTemplate(WorkoutTemplate workoutTemplate, String title, ArrayList<WorkoutComponent> components) throws ParseException {
         workoutTemplate.setTitle(title);                // for if title has been changed
         workoutTemplate.setComponents(components);      // for if components changed
+        workoutTemplate.saveUserTemplate();             // check if user is already in savedBy list in database
         workoutTemplate.saveInBackground(new SaveCallback() {
             @Override
             public void done(ParseException e) {
@@ -189,9 +191,12 @@ public class ScratchCreateActivity extends AppCompatActivity {
     }
 
     private void saveNewTemplate(String title, ArrayList<WorkoutComponent> components) throws ParseException {
+        List<ParseUser> savedBy = new ArrayList<>();
+        savedBy.add(ParseUser.getCurrentUser());
         WorkoutTemplate template = new WorkoutTemplate();
         template.setTitle(title);
         template.setComponents(components);
+        template.setSavedBy(savedBy);
         template.saveInBackground(new SaveCallback() {
             @Override
             public void done(ParseException e) {
