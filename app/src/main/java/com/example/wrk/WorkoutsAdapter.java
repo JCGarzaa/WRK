@@ -1,16 +1,20 @@
 package com.example.wrk;
 
 import android.content.Context;
+import android.os.Build;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
@@ -122,6 +126,22 @@ public class WorkoutsAdapter extends RecyclerView.Adapter<WorkoutsAdapter.ViewHo
 
                 tlWorkouts.addView(tbrow);      // link row to the tablelayout
             }
+            // double tap action to save a template
+            tlWorkouts.setOnTouchListener(new OnDoubleTapListener(mContext) {
+                @RequiresApi(api = Build.VERSION_CODES.N)
+                @Override
+                public void onDoubleTap(MotionEvent e) {
+                    // save template to users account if not already saved
+                    WorkoutTemplate tappedTemplate = workoutPerformed.getWorkout();
+                    if (!tappedTemplate.isSavedByCurrentUser()) {
+                        tappedTemplate.saveUserTemplate();
+                        Toast.makeText(mContext, "Saved " + tappedTemplate.getTitle() + " to your templates.", Toast.LENGTH_SHORT).show();
+                    }
+                    else {
+                        Toast.makeText(mContext, "You already have this template saved.", Toast.LENGTH_SHORT).show();
+                    }
+                }
+            });
         }
     }
 
