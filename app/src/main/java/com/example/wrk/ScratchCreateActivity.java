@@ -2,14 +2,18 @@ package com.example.wrk;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.coordinatorlayout.widget.CoordinatorLayout;
+import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -22,6 +26,7 @@ import com.example.wrk.models.Exercise;
 import com.example.wrk.models.WorkoutComponent;
 import com.example.wrk.models.WorkoutPerformed;
 import com.example.wrk.models.WorkoutTemplate;
+import com.google.android.material.snackbar.Snackbar;
 import com.parse.FindCallback;
 import com.parse.ParseException;
 import com.parse.ParseQuery;
@@ -37,6 +42,7 @@ import java.util.List;
 
 // activity is used for creating a workout from scratch
 public class ScratchCreateActivity extends AppCompatActivity {
+    CoordinatorLayout coordinatorLayout;
     EditText etCreateWorkoutTitle;
     ImageButton ibDeleteWorkout;
     ImageButton ibAddExercise;
@@ -52,6 +58,7 @@ public class ScratchCreateActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_scratch_create);
 
+        coordinatorLayout = findViewById(R.id.coordinatorLayout);
         etCreateWorkoutTitle = findViewById(R.id.etCreateWorkoutTitle);
         ibDeleteWorkout = findViewById(R.id.ibDeleteWorkout);
         ibAddExercise = findViewById(R.id.ibAddExercise);
@@ -129,6 +136,7 @@ public class ScratchCreateActivity extends AppCompatActivity {
         });
 
         btnSave.setOnClickListener(new View.OnClickListener() {
+            @RequiresApi(api = Build.VERSION_CODES.N)
             @Override
             public void onClick(View v) {
                 String title = etCreateWorkoutTitle.getText().toString();
@@ -154,6 +162,7 @@ public class ScratchCreateActivity extends AppCompatActivity {
                 }
             }
         });
+        enableSwipeToDeleteAndUndo();
     }
 
     @Override
@@ -176,10 +185,13 @@ public class ScratchCreateActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.N)
     private void updateTemplate(WorkoutTemplate workoutTemplate, String title, ArrayList<WorkoutComponent> components) throws ParseException {
         workoutTemplate.setTitle(title);                // for if title has been changed
         workoutTemplate.setComponents(components);      // for if components changed
-        workoutTemplate.saveUserTemplate();             // check if user is already in savedBy list in database
+        if (!workoutTemplate.isSavedByCurrentUser()) {
+            workoutTemplate.saveUserTemplate();             // check if user is already in savedBy list in database
+        }
         workoutTemplate.saveInBackground(new SaveCallback() {
             @Override
             public void done(ParseException e) {
@@ -243,5 +255,31 @@ public class ScratchCreateActivity extends AppCompatActivity {
                 workoutsPerformed.addAll(workouts);
             }
         });
+    }
+
+    private void enableSwipeToDeleteAndUndo() {
+        SwipeToDeleteCallback swipeToDeleteCallback = new SwipeToDeleteCallback(this) {
+            @Override
+            public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int i) {
+                final int position = viewHolder.getAdapterPosition();
+                final WorkoutComponent component = adapter.getData().get(position);
+
+                adapter.removeItem(position);
+
+                Snackbar snackbar = Snackbar
+                        .make(coordinatorLayout, "Exercise was removed.", Snackbar.LENGTH_LONG);
+                snackbar.setAction("UNDO", new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        adapter.restoreItem(component, position);
+                        rvComponents.scrollToPosition(position);
+                    }
+                });
+                snackbar.setActionTextColor(Color.YELLOW);
+                snackbar.show();
+            }
+        };
+        ItemTouchHelper itemTouchhelper = new ItemTouchHelper(swipeToDeleteCallback);
+        itemTouchhelper.attachToRecyclerView(rvComponents);
     }
 }

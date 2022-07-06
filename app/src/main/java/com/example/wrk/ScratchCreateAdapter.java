@@ -53,6 +53,20 @@ public class ScratchCreateAdapter extends RecyclerView.Adapter<ScratchCreateAdap
         return mComponents.size();
     }
 
+    public void removeItem(int position) {
+        mComponents.remove(position);
+        notifyItemRemoved(position);
+    }
+
+    public void restoreItem(WorkoutComponent component, int position) {
+        mComponents.add(position, component);
+        notifyItemInserted(position);
+    }
+
+    public ArrayList<WorkoutComponent> getData() {
+        return (ArrayList<WorkoutComponent>) mComponents;
+    }
+
     public class ViewHolder extends RecyclerView.ViewHolder{
         private TableLayout tlComponents;
         private TextView tvExerciseName;
@@ -71,6 +85,9 @@ public class ScratchCreateAdapter extends RecyclerView.Adapter<ScratchCreateAdap
         public void bind(WorkoutComponent component) {
             Context tableContext = tlComponents.getContext();
             tvExerciseName.setText(component.getExercise().getName());
+            // clear any existing rows starting after exercise name and column headers
+            tlComponents.removeViews(2, Math.max(0, tlComponents.getChildCount()) - 2); // 2 is starting row index with 0 and 1 being exercise name and column headers
+            // create new row for each existing set
             for (int i = 1; i <= component.getSets(); i++) {
                 // create new row for each set
                 TableRow tbrow = new TableRow(tableContext);
