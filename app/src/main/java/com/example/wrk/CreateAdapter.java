@@ -63,6 +63,11 @@ public class CreateAdapter extends RecyclerView.Adapter<CreateAdapter.ViewHolder
         return workoutTemplates.size();
     }
 
+    public void clear() {
+        workoutTemplates.clear();
+        notifyDataSetChanged();
+    }
+
     public class ViewHolder extends RecyclerView.ViewHolder {
         private TextView tvTemplateTitle;
         private TextView tvBodyParts;
@@ -82,7 +87,6 @@ public class CreateAdapter extends RecyclerView.Adapter<CreateAdapter.ViewHolder
             if (template.isSavedByCurrentUser()) {
                 tvTemplateTitle.setText(template.getTitle());
                 queryComponents(template);
-
                 Set<String> set = new HashSet<>();
                 // store body parts included in workout in a list
                 for (int i = 0; i < workoutComponents.size(); i++) {
@@ -91,6 +95,7 @@ public class CreateAdapter extends RecyclerView.Adapter<CreateAdapter.ViewHolder
                 }
                 // remove any repetitions of body parts
                 bodyParts = new ArrayList(set);
+                tvBodyParts.setText("");    // reset to empty string
                 tvBodyParts.append(String.join(", ", bodyParts));
 
                 ibEdit.setOnClickListener(new View.OnClickListener() {
@@ -115,7 +120,12 @@ public class CreateAdapter extends RecyclerView.Adapter<CreateAdapter.ViewHolder
 
     @RequiresApi(api = Build.VERSION_CODES.N)
     private void queryComponents(WorkoutTemplate template) throws ParseException, JSONException {
-        workoutComponents = new ArrayList<>();     // initialize empty list each time a query is called
+        if (workoutComponents != null) {
+            workoutComponents.clear();
+        }
+        else {
+            workoutComponents = new ArrayList<>();     // initialize empty list each time a query is called
+        }
         JSONArray componentArray = template.getComponents();
         ParseQuery<WorkoutComponent> componentQuery = ParseQuery.getQuery(WorkoutComponent.class);
         for (int i = 0; i < componentArray.length(); i++) {

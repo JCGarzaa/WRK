@@ -74,6 +74,14 @@ public class CreateFragment extends Fragment {
         queryTemplates();
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        adapter.clear();
+        queryTemplates();
+        adapter.notifyDataSetChanged();
+    }
+
     protected void queryTemplates() {
         ParseQuery<WorkoutTemplate> templatesQuery = ParseQuery.getQuery(WorkoutTemplate.class);
         // includes specified data
@@ -94,6 +102,7 @@ public class CreateFragment extends Fragment {
                     return;
                 }
                 // save received posts to list and notify adapter of new data
+                savedTemplates.clear();
                 savedTemplates.addAll(template);
                 adapter.notifyDataSetChanged();
             }
