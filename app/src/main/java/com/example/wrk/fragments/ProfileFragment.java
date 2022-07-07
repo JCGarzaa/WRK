@@ -33,7 +33,10 @@ import com.parse.ParseFile;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
 
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 public class ProfileFragment extends Fragment {
@@ -103,6 +106,7 @@ public class ProfileFragment extends Fragment {
         tvProfileUsername = view.findViewById(R.id.tvProfileUsername);
         tvProfileUsername.setText(user.getUsername());
 
+        updateStreak(user);     // check each time someone visits a profile
         tvDailyStreak = view.findViewById(R.id.tvDailyStreak);
         tvDailyStreak.setText(String.valueOf(user.getInt("streak")));
 
@@ -157,5 +161,37 @@ public class ProfileFragment extends Fragment {
                 adapter.notifyDataSetChanged();
             }
         });
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    protected void updateStreak(ParseUser user) {
+        Date lastWorkout = user.getDate("lastWorkout");
+        int streak = user.getInt("streak");     // current daily streak
+        int dayDifference = 0;
+        int yearDifference = 0;
+        int currentDayOfYear;
+        int recentWorkoutDayOfYear;
+
+        if (lastWorkout != null) {
+            // calculate difference in days since last workout
+            // this is to allow for more than 24 hrs since workout as long as date is 1 day apart
+            LocalDate today = LocalDate.now();
+            currentDayOfYear = today.getDayOfYear();
+
+            LocalDate recentWorkout = lastWorkout.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+            recentWorkoutDayOfYear = recentWorkout.getDayOfYear();
+
+            dayDifference = currentDayOfYear - recentWorkoutDayOfYear;      // will be negative if two different years
+            yearDifference = today.getYear() - recentWorkout.getYear();     // to calculate if years have gone by since last workout
+        }
+
+        // reset streak to 0 if more than 1 day has past since working out
+        if (lastWorkout == null || dayDifference > 1 || (dayDifference <= 0 && yearDifference > 0) ) {
+            streak = 0;     // reset to 0
+        }
+
+        // save to database
+        user.put("streak", streak);
+        user.saveInBackground();
     }
 }
