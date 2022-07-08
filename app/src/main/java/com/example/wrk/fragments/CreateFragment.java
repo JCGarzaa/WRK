@@ -1,5 +1,6 @@
 package com.example.wrk.fragments;
 
+import android.animation.Animator;
 import android.content.Intent;
 import android.os.Bundle;
 
@@ -9,9 +10,12 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.transition.Transition;
+import android.transition.TransitionValues;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewAnimationUtils;
 import android.view.ViewGroup;
 
 import com.example.wrk.CreateAdapter;
@@ -32,6 +36,7 @@ public class CreateFragment extends Fragment {
     public static final String TAG = "CreateFragment";
 
     private FloatingActionButton fabCreate;
+    private Transition.TransitionListener mEnterTransitionListener;
     private RecyclerView rvSavedWorkouts;
     protected CreateAdapter adapter;
     protected List<WorkoutTemplate> savedTemplates;
@@ -57,6 +62,33 @@ public class CreateFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         savedTemplates = new ArrayList<>();
         fabCreate = view.findViewById(R.id.fabCreate);
+        fabCreate.setVisibility(View.INVISIBLE);
+        mEnterTransitionListener = new Transition.TransitionListener() {
+            @Override
+            public void onTransitionStart(Transition transition) { }
+
+            @Override
+            public void onTransitionEnd(Transition transition) { enterReveal(view);}
+
+            @Override
+            public void onTransitionCancel(Transition transition) { }
+
+            @Override
+            public void onTransitionPause(Transition transition) { }
+
+            @Override
+            public void onTransitionResume(Transition transition) { }
+        };
+        Transition transition = new Transition() {
+            @Override
+            public void captureStartValues(TransitionValues transitionValues) { }
+
+            @Override
+            public void captureEndValues(TransitionValues transitionValues) { }
+        };
+        transition.addListener(mEnterTransitionListener);
+        this.setEnterTransition(transition);
+
         fabCreate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -98,5 +130,24 @@ public class CreateFragment extends Fragment {
                 adapter.notifyDataSetChanged();
             }
         });
+    }
+
+    public void enterReveal(View view) {
+        // previously invisible view
+        final View myView = view.findViewById(R.id.fabCreate);
+
+        // get the center for the clipping circle
+        int cx = myView.getMeasuredWidth() / 2;
+        int cy = myView.getMeasuredHeight() / 2;
+
+        // get the final radius for the clipping circle
+        int finalRadius = Math.max(myView.getWidth(), myView.getHeight()) / 2;
+        // create the animator for this view (the start radius is zero)
+        Animator anim =
+                ViewAnimationUtils.createCircularReveal(myView, cx, cy, 0, finalRadius);
+
+        // make the view visible and start the animation
+        myView.setVisibility(View.VISIBLE);
+        anim.start();
     }
 }
