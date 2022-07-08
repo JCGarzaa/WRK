@@ -8,6 +8,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.SearchView;
 
 import com.example.wrk.fragments.CreateExerciseDialogFragment;
 import com.example.wrk.models.Exercise;
@@ -26,6 +27,7 @@ public class ExerciseListActivity extends AppCompatActivity {
     List<Exercise> exerciseList;
     ExerciseListAdapter adapter;
     FloatingActionButton fabCreateNewExercise;
+    SearchView searchView;
     CreateExerciseDialogFragment createExerciseDialogFragment;
 
     @Override
@@ -46,16 +48,34 @@ public class ExerciseListActivity extends AppCompatActivity {
                 showExerciseDialog();
             }
         });
-        queryExercises();
+        searchView = findViewById(R.id.searchView);
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String searchQuery) {
+                if (searchQuery.isEmpty()) {
+                    queryAllExercises();
+                }
+                else {
+                    querySearchExercises(searchQuery);      // filter exercises
+                }
+                searchView.clearFocus();
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String searchQuery) {
+                querySearchExercises(searchQuery);
+                return false;
+            }
+        });
+        queryAllExercises();
     }
 
-    protected void queryExercises() {
+    protected void queryAllExercises() {
         ParseQuery<Exercise> exerciseQuery = ParseQuery.getQuery(Exercise.class);
         // includes specified data
         exerciseQuery.include(Exercise.KEY_NAME);
         exerciseQuery.include(Exercise.KEY_BODYPART);
-        // limits number of items to generate
-        exerciseQuery.setLimit(10);
         // alphabetical order
         exerciseQuery.addAscendingOrder(Exercise.KEY_NAME);
         // async call for exercises
@@ -67,7 +87,32 @@ public class ExerciseListActivity extends AppCompatActivity {
                     return;
                 }
                 // save received posts to list and notify adapter of new data
+                exerciseList.clear();
                 exerciseList.addAll(workouts);
+                adapter.notifyDataSetChanged();
+            }
+        });
+    }
+
+    protected void querySearchExercises(String searchQuery) {
+        ParseQuery<Exercise> exerciseQuery = ParseQuery.getQuery(Exercise.class);
+        exerciseQuery.include(Exercise.KEY_NAME);
+        exerciseQuery.include(Exercise.KEY_BODYPART);
+        // query for exercises with name similar to entry
+        exerciseQuery.whereMatches(Exercise.KEY_NAME, searchQuery, "i");
+        // alphabetical order
+        exerciseQuery.addAscendingOrder(Exercise.KEY_NAME);
+        // async call for exercises
+        exerciseQuery.findInBackground(new FindCallback<Exercise>() {
+            @Override
+            public void done(List<Exercise> exercises, ParseException e) {
+                if (e != null) {
+                    Log.e(TAG, "Error with searching for exercises. ", e);
+                    return;
+                }
+                // save received posts to list and notify adapter of new data
+                exerciseList.clear();
+                exerciseList.addAll(exercises);
                 adapter.notifyDataSetChanged();
             }
         });
