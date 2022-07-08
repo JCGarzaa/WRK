@@ -149,35 +149,27 @@ public class TrackerActivity extends AppCompatActivity {
     private void updateUserStreak() {
         Date lastWorkout = ParseUser.getCurrentUser().getDate("lastWorkout");
         int streak = ParseUser.getCurrentUser().getInt("streak");       // current daily streak
-        int dayDifference = 0;
-        int yearDifference = 0;
-        int currentDayOfYear;
-        int recentWorkoutDayOfYear;
+        long timeDifference = 0;
 
-        // for working out on last day of year and 1st day of new year
-        final int NEW_YEAR_DIFF = -364;     // 1 - 365 = -364
+        final long SECONDS_IN_DAY = 86400;
 
         LocalDate today = LocalDate.now();
-        currentDayOfYear = today.getDayOfYear();
+        long todayTime = today.atStartOfDay(ZoneId.systemDefault()).toEpochSecond();
 
         // calculate difference in days since last workout
         if (lastWorkout != null) {
-            // this is to allow for more than 24 hrs since workout as long as date is 1 day apart
             LocalDate recentWorkout = lastWorkout.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-            recentWorkoutDayOfYear = recentWorkout.getDayOfYear();
-
-            dayDifference = currentDayOfYear - recentWorkoutDayOfYear;      // will be negative if two different years
-            yearDifference = today.getYear() - recentWorkout.getYear();     // to calculate if years have gone by since last workout
+            long recentWorkoutTime = recentWorkout.atStartOfDay(ZoneId.systemDefault()).toEpochSecond();
+            timeDifference = todayTime - recentWorkoutTime;
         }
 
         // increment streak only if there is a 1 day difference since the last workout.
-        // 1-365 = -364. If leap year then it would be -365.
-        if (lastWorkout != null && ((dayDifference == 1 && yearDifference == 0) || (dayDifference <= NEW_YEAR_DIFF && yearDifference == 1))) {
-            streak++;       // increment streak by 1
+        if (lastWorkout != null && timeDifference == SECONDS_IN_DAY) {
+            streak++;           // increment streak by 1
         }
         // reset streak to 1 if more than 1 day has past since working out since completing workout
-        else if (lastWorkout == null || dayDifference > 1 || (dayDifference <= 0 && yearDifference > 0)){
-            streak = 1;     // reset to 1 since completing the workout
+        else if (lastWorkout != null && timeDifference > SECONDS_IN_DAY){
+            streak = 1;         // reset to 1 since completing the workout
         }
 
         // save to database

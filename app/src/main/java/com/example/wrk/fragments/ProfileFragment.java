@@ -167,27 +167,23 @@ public class ProfileFragment extends Fragment {
     protected void updateStreak(ParseUser user) {
         Date lastWorkout = user.getDate("lastWorkout");
         int streak = user.getInt("streak");     // current daily streak
-        int dayDifference = 0;
-        int yearDifference = 0;
-        int currentDayOfYear;
-        int recentWorkoutDayOfYear;
+        long timeDifference = 0;
+        final long SECONDS_IN_DAY = 86400;
 
         if (lastWorkout != null) {
             // calculate difference in days since last workout
-            // this is to allow for more than 24 hrs since workout as long as date is 1 day apart
             LocalDate today = LocalDate.now();
-            currentDayOfYear = today.getDayOfYear();
+            long todayTime = today.atStartOfDay(ZoneId.systemDefault()).toEpochSecond();
 
             LocalDate recentWorkout = lastWorkout.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-            recentWorkoutDayOfYear = recentWorkout.getDayOfYear();
+            long recentWorkoutTime = recentWorkout.atStartOfDay(ZoneId.systemDefault()).toEpochSecond();
 
-            dayDifference = currentDayOfYear - recentWorkoutDayOfYear;      // will be negative if two different years
-            yearDifference = today.getYear() - recentWorkout.getYear();     // to calculate if years have gone by since last workout
+            timeDifference = todayTime - recentWorkoutTime;
         }
 
         // reset streak to 0 if more than 1 day has past since working out
-        if (lastWorkout == null || dayDifference > 1 || (dayDifference <= 0 && yearDifference > 0) ) {
-            streak = 0;     // reset to 0
+        if (lastWorkout == null || timeDifference > SECONDS_IN_DAY) {
+            streak = 0;
         }
 
         // save to database
