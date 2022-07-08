@@ -1,5 +1,6 @@
 package com.example.wrk;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.os.Build;
 import android.util.Log;
@@ -15,9 +16,12 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.example.wrk.fragments.ProfileFragment;
 import com.example.wrk.models.WorkoutComponent;
 import com.example.wrk.models.WorkoutPerformed;
 import com.example.wrk.models.WorkoutTemplate;
@@ -36,20 +40,20 @@ import java.util.List;
 
 // This adapter is used to help populate the RecyclerView in the FeedFragment
 public class WorkoutsAdapter extends RecyclerView.Adapter<WorkoutsAdapter.ViewHolder> {
-    private Context mContext;
+    private MainActivity mainActivity;
     private List<WorkoutPerformed> mWorkoutsPerformed;
     private List<WorkoutComponent> mWorkoutComponents;
     private List<WorkoutTemplate> mWorkoutTemplate;
 
-    public WorkoutsAdapter(Context context, List<WorkoutPerformed> workoutsPerformed) {
-        this.mContext = context;
+    public WorkoutsAdapter(MainActivity activity, List<WorkoutPerformed> workoutsPerformed) {
+        this.mainActivity = activity;
         this.mWorkoutsPerformed = workoutsPerformed;
     }
 
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view  = LayoutInflater.from(mContext).inflate(R.layout.item_workout, parent, false);
+        View view  = LayoutInflater.from(mainActivity).inflate(R.layout.item_workout, parent, false);
         return new ViewHolder(view);
     }
 
@@ -92,13 +96,14 @@ public class WorkoutsAdapter extends RecyclerView.Adapter<WorkoutsAdapter.ViewHo
             tvWorkoutTitle = itemView.findViewById(R.id.tvWorkoutTitle);
         }
 
+        @SuppressLint("ClickableViewAccessibility")
         public void bind(WorkoutPerformed workoutPerformed) throws ParseException, JSONException {
             Context tableContext = tlWorkouts.getContext();
 
             tvName.setText(workoutPerformed.getUser().getUsername());
             ParseFile image = workoutPerformed.getPFP();
             if (image != null) {
-                Glide.with(mContext).load(workoutPerformed.getPFP().getUrl()).into(ivFeedPFP);
+                Glide.with(mainActivity).load(workoutPerformed.getPFP().getUrl()).into(ivFeedPFP);
             }
             String title = workoutPerformed.getWorkout().getTitle();
             tvWorkoutTitle.setText(title);     // title of workout
@@ -127,7 +132,7 @@ public class WorkoutsAdapter extends RecyclerView.Adapter<WorkoutsAdapter.ViewHo
                 tlWorkouts.addView(tbrow);      // link row to the tablelayout
             }
             // double tap action to save a template
-            tlWorkouts.setOnTouchListener(new OnDoubleTapListener(mContext) {
+            tlWorkouts.setOnTouchListener(new OnDoubleTapListener(mainActivity) {
                 @RequiresApi(api = Build.VERSION_CODES.N)
                 @Override
                 public void onDoubleTap(MotionEvent e) {
@@ -135,11 +140,21 @@ public class WorkoutsAdapter extends RecyclerView.Adapter<WorkoutsAdapter.ViewHo
                     WorkoutTemplate tappedTemplate = workoutPerformed.getWorkout();
                     if (!tappedTemplate.isSavedByCurrentUser()) {
                         tappedTemplate.saveUserTemplate();
-                        Toast.makeText(mContext, "Saved " + tappedTemplate.getTitle() + " to your templates.", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(mainActivity, "Saved " + tappedTemplate.getTitle() + " to your templates.", Toast.LENGTH_SHORT).show();
                     }
                     else {
-                        Toast.makeText(mContext, "You already have this template saved.", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(mainActivity, "You already have this template saved.", Toast.LENGTH_SHORT).show();
                     }
+                }
+            });
+            // view other people's profile by clicking on their profile picture
+            ivFeedPFP.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    ParseUser user = workoutPerformed.getUser();
+                    final FragmentManager fragmentManager = mainActivity.getSupportFragmentManager();
+                    Fragment fragment = new ProfileFragment(mainActivity, user);
+                    fragmentManager.beginTransaction().replace(R.id.flContainer, fragment).commit();
                 }
             });
         }

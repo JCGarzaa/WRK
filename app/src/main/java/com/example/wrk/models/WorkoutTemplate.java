@@ -4,13 +4,11 @@ import android.os.Build;
 
 import androidx.annotation.RequiresApi;
 
-import com.example.wrk.models.WorkoutComponent;
 import com.parse.ParseClassName;
 import com.parse.ParseObject;
 import com.parse.ParseUser;
 
 import org.json.JSONArray;
-import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -63,7 +61,6 @@ public class WorkoutTemplate extends ParseObject {
     }
 
     public void saveUserTemplate() {
-        unsaveTemplate();
         List<ParseUser> savedBy = getSavedBy();
         savedBy.add(ParseUser.getCurrentUser());
         setSavedBy(savedBy);
