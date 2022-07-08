@@ -33,7 +33,7 @@ public class CreateAdapter extends RecyclerView.Adapter<CreateAdapter.ViewHolder
     Context mContext;
     List<WorkoutTemplate> workoutTemplates;
     List<WorkoutComponent> workoutComponents;
-    List<String> bodyParts;
+    Set<String> bodyParts;
 
     public CreateAdapter(Context context, List<WorkoutTemplate> workoutTemplates) {
         this.mContext = context;
@@ -87,16 +87,13 @@ public class CreateAdapter extends RecyclerView.Adapter<CreateAdapter.ViewHolder
             if (template.isSavedByCurrentUser()) {
                 tvTemplateTitle.setText(template.getTitle());
                 queryComponents(template);
-                Set<String> set = new HashSet<>();
-                // store body parts included in workout in a list
+                bodyParts = new HashSet<>();
+                // store body parts included in workout in a set to prevent duplicates
                 for (int i = 0; i < workoutComponents.size(); i++) {
                     String body = workoutComponents.get(i).getExercise().getBodyPart();
-                    set.add(body);
+                    bodyParts.add(body);
                 }
-                // remove any repetitions of body parts
-                bodyParts = new ArrayList(set);
-                tvBodyParts.setText("");    // reset to empty string
-                tvBodyParts.append(String.join(", ", bodyParts));
+                tvBodyParts.setText(String.join(", ", bodyParts));
 
                 ibEdit.setOnClickListener(new View.OnClickListener() {
                     @Override
