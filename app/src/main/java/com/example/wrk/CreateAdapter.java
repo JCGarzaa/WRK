@@ -117,12 +117,7 @@ public class CreateAdapter extends RecyclerView.Adapter<CreateAdapter.ViewHolder
 
     @RequiresApi(api = Build.VERSION_CODES.N)
     private void queryComponents(WorkoutTemplate template) throws ParseException, JSONException {
-        if (workoutComponents != null) {
-            workoutComponents.clear();
-        }
-        else {
-            workoutComponents = new ArrayList<>();     // initialize empty list each time a query is called
-        }
+        workoutComponents = new ArrayList<>();      // initialize empty list each time a query is called
         JSONArray componentArray = template.getComponents();
         ParseQuery<WorkoutComponent> componentQuery = ParseQuery.getQuery(WorkoutComponent.class);
         for (int i = 0; i < componentArray.length(); i++) {
