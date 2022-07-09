@@ -129,6 +129,7 @@ public class ProfileFragment extends Fragment {
             });
         }
         else {
+            btnLogout.setVisibility(View.INVISIBLE);
             ibFollow = view.findViewById(R.id.ibProfile);
             if (isFollowedByCurrentUser()) {
                 ibFollow.setBackground(getResources().getDrawable(android.R.drawable.btn_star_big_on));
