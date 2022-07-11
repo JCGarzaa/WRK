@@ -33,7 +33,10 @@ import com.parse.ParseFile;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
 
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 public class ProfileFragment extends Fragment {
@@ -103,6 +106,7 @@ public class ProfileFragment extends Fragment {
         tvProfileUsername = view.findViewById(R.id.tvProfileUsername);
         tvProfileUsername.setText(user.getUsername());
 
+        updateStreak(user);     // check each time someone visits a profile
         tvDailyStreak = view.findViewById(R.id.tvDailyStreak);
         tvDailyStreak.setText(String.valueOf(user.getInt("streak")));
 
@@ -157,5 +161,33 @@ public class ProfileFragment extends Fragment {
                 adapter.notifyDataSetChanged();
             }
         });
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    protected void updateStreak(ParseUser user) {
+        Date lastWorkout = user.getDate("lastWorkout");
+        int streak = user.getInt("streak");     // current daily streak
+        long timeDifference = 0;
+        final long SECONDS_IN_DAY = 86400;
+
+        if (lastWorkout != null) {
+            // calculate difference in days since last workout
+            LocalDate today = LocalDate.now();
+            long todayTime = today.atStartOfDay(ZoneId.systemDefault()).toEpochSecond();
+
+            LocalDate recentWorkout = lastWorkout.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+            long recentWorkoutTime = recentWorkout.atStartOfDay(ZoneId.systemDefault()).toEpochSecond();
+
+            timeDifference = todayTime - recentWorkoutTime;
+        }
+
+        // reset streak to 0 if more than 1 day has past since working out
+        if (lastWorkout == null || timeDifference > SECONDS_IN_DAY) {
+            streak = 0;
+        }
+
+        // save to database
+        user.put("streak", streak);
+        user.saveInBackground();
     }
 }

@@ -14,6 +14,7 @@ import android.widget.EditText;
 import android.widget.RadioGroup;
 import android.widget.Toast;
 
+import com.example.wrk.ExerciseListActivity;
 import com.example.wrk.R;
 import com.example.wrk.models.Exercise;
 import com.parse.FindCallback;
@@ -30,9 +31,14 @@ public class CreateExerciseDialogFragment extends DialogFragment {
     private String selectedBodyPart;
     private RadioGroup radioGroup;
     private List<Exercise> exerciseList;
+    private ExerciseListActivity activity;
 
     public CreateExerciseDialogFragment() {
         // Required empty public constructor
+    }
+
+    public CreateExerciseDialogFragment(ExerciseListActivity activity) {
+        this.activity = activity;
     }
 
     @Override
@@ -72,8 +78,16 @@ public class CreateExerciseDialogFragment extends DialogFragment {
                             }
                         }
                         exercise.setBodyPart(selectedBodyPart);
-                        exercise.saveInBackground();
-                        dismiss();      // return to parent activity
+                        try {
+                            exercise.save();
+                        } catch (ParseException e) {
+                            e.printStackTrace();
+                        }
+                        activity.adapter.clear();
+                        activity.queryExercises();
+                        activity.adapter.notifyDataSetChanged();
+                        dismiss();
+
                     }
                     else {
                         Toast.makeText(getContext(), "Please select a body part.", Toast.LENGTH_SHORT).show();
