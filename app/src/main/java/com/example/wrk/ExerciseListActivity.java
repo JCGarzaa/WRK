@@ -23,12 +23,12 @@ import java.util.List;
 // This activity shows a list of exercises to choose from that will be added to the template builder
 public class ExerciseListActivity extends AppCompatActivity {
     public static final String TAG = "ExerciseListActivity";
-    RecyclerView rvExercises;
-    List<Exercise> exerciseList;
-    ExerciseListAdapter adapter;
-    FloatingActionButton fabCreateNewExercise;
+    private RecyclerView rvExercises;
+    private List<Exercise> exerciseList;
+    private ExerciseListAdapter adapter;
+    private FloatingActionButton fabCreateNewExercise;
     SearchView searchView;
-    CreateExerciseDialogFragment createExerciseDialogFragment;
+    private CreateExerciseDialogFragment createExerciseDialogFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
