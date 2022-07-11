@@ -43,6 +43,11 @@ public class ExerciseListAdapter extends RecyclerView.Adapter<ExerciseListAdapte
         return mExercises.size();
     }
 
+    public void clear() {
+        mExercises.clear();
+        notifyDataSetChanged();
+    }
+
     public class ViewHolder extends RecyclerView.ViewHolder {
         private TextView tvExName;
         private TextView tvExBodyPart;

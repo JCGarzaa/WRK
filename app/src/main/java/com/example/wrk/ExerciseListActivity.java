@@ -25,7 +25,7 @@ public class ExerciseListActivity extends AppCompatActivity {
     public static final String TAG = "ExerciseListActivity";
     private RecyclerView rvExercises;
     private List<Exercise> exerciseList;
-    private ExerciseListAdapter adapter;
+    public ExerciseListAdapter adapter;
     private FloatingActionButton fabCreateNewExercise;
     SearchView searchView;
     private CreateExerciseDialogFragment createExerciseDialogFragment;
@@ -119,7 +119,7 @@ public class ExerciseListActivity extends AppCompatActivity {
     }
 
     private void showExerciseDialog() {
-        createExerciseDialogFragment = new CreateExerciseDialogFragment();
+        createExerciseDialogFragment = new CreateExerciseDialogFragment(this);
         FragmentManager fm = getSupportFragmentManager();
         createExerciseDialogFragment.show(fm, "fragment_create_exercise_dialog");
     }
