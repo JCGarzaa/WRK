@@ -27,8 +27,8 @@ public class ExerciseListActivity extends AppCompatActivity {
     private List<Exercise> exerciseList;
     public ExerciseListAdapter adapter;
     private FloatingActionButton fabCreateNewExercise;
-    SearchView searchView;
     private CreateExerciseDialogFragment createExerciseDialogFragment;
+    SearchView searchView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -87,7 +87,6 @@ public class ExerciseListActivity extends AppCompatActivity {
                     return;
                 }
                 // save received posts to list and notify adapter of new data
-                exerciseList.clear();
                 exerciseList.addAll(workouts);
                 adapter.notifyDataSetChanged();
             }
@@ -122,5 +121,7 @@ public class ExerciseListActivity extends AppCompatActivity {
         createExerciseDialogFragment = new CreateExerciseDialogFragment(this);
         FragmentManager fm = getSupportFragmentManager();
         createExerciseDialogFragment.show(fm, "fragment_create_exercise_dialog");
+        exerciseList.clear();
+        queryAllExercises();
     }
 }

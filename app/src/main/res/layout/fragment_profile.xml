@@ -21,7 +21,7 @@
             app:layout_constraintStart_toStartOf="parent" />
 
         <ImageButton
-            android:id="@+id/ibGymsNearMe"
+            android:id="@+id/ibProfile"
             android:layout_width="55dp"
             android:layout_height="35dp"
             android:layout_marginTop="24dp"

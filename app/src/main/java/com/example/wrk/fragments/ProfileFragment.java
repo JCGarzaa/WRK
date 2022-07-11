@@ -7,6 +7,7 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
+import androidx.core.content.res.ResourcesCompat;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -33,7 +34,10 @@ import com.parse.ParseFile;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
 
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 public class ProfileFragment extends Fragment {
@@ -47,6 +51,7 @@ public class ProfileFragment extends Fragment {
     private TextView tvProfileUsername;
     private TextView tvDailyStreak;
     private ImageButton ibGymsNearMe;
+    private ImageButton ibFollow;
     private RecyclerView rvPrevWorkouts;
     protected ProfileAdapter adapter;
     protected List<WorkoutPerformed> workoutsPerformed;
@@ -103,6 +108,7 @@ public class ProfileFragment extends Fragment {
         tvProfileUsername = view.findViewById(R.id.tvProfileUsername);
         tvProfileUsername.setText(user.getUsername());
 
+        updateStreak(user);     // check each time someone visits a profile
         tvDailyStreak = view.findViewById(R.id.tvDailyStreak);
         tvDailyStreak.setText(String.valueOf(user.getInt("streak")));
 
@@ -115,14 +121,42 @@ public class ProfileFragment extends Fragment {
             }
         });
 
-        ibGymsNearMe = view.findViewById(R.id.ibGymsNearMe);
-        ibGymsNearMe.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent i = new Intent(getContext(), GymMapsActivity.class);
-                startActivity(i);
+        if (user.hasSameId(ParseUser.getCurrentUser())) {
+            // send user to their profile page if they click on their own profile
+            ibGymsNearMe = view.findViewById(R.id.ibProfile);
+            ibGymsNearMe.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent i = new Intent(getContext(), GymMapsActivity.class);
+                    startActivity(i);
+                }
+            });
+        }
+        else {
+            btnLogout.setVisibility(View.INVISIBLE);
+            ibFollow = view.findViewById(R.id.ibProfile);
+            if (isFollowedByCurrentUser()) {
+                ibFollow.setBackground(getResources().getDrawable(android.R.drawable.btn_star_big_on));
             }
-        });
+            else {
+                ibFollow.setBackground(getResources().getDrawable(android.R.drawable.btn_star_big_off));
+            }
+
+            ibFollow.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (isFollowedByCurrentUser()) {
+                        unFollow();
+                        ibFollow.setBackground(getResources().getDrawable(android.R.drawable.btn_star_big_off));
+                    }
+                    else {
+                        follow();
+                        ibFollow.setBackground(getResources().getDrawable(android.R.drawable.btn_star_big_on));
+                    }
+                }
+            });
+        }
+
         rvPrevWorkouts = view.findViewById(R.id.rvPosts);
         rvPrevWorkouts.setHasFixedSize(true);      // allows for optimizations
         workoutsPerformed = new ArrayList<>();
@@ -132,6 +166,46 @@ public class ProfileFragment extends Fragment {
         adapter = new ProfileAdapter(getContext(), workoutsPerformed);
         rvPrevWorkouts.setAdapter(adapter);
         queryWorkouts();
+    }
+
+    private void unFollow() {
+        ParseUser currentUser = ParseUser.getCurrentUser();
+        List<ParseUser> followingList = getFollowing();
+        // remove user from currentUsers follow list
+        for (int i = 0; i < followingList.size(); i++) {
+            if (followingList.get(i).hasSameId(user)) {
+                followingList.remove(i);
+            }
+        }
+        currentUser.put("following", followingList);
+        currentUser.saveInBackground();
+    }
+
+    private void follow() {
+        unFollow();     // to ensure there is no duplicates of users added
+        List<ParseUser> followingList = getFollowing();
+        ParseUser currentUser = ParseUser.getCurrentUser();
+        followingList.add(user);        // add user to currentUsers follow list
+        currentUser.put("following", followingList);
+        currentUser.saveInBackground();
+    }
+
+    private boolean isFollowedByCurrentUser() {
+        List <ParseUser> following = getFollowing();
+        for (int i = 0; i< following.size(); i++) {
+            if (following.get(i).hasSameId(user)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    protected List<ParseUser> getFollowing() {
+        List<ParseUser> users = ParseUser.getCurrentUser().getList("following");
+        if (users == null) {
+            return new ArrayList<>();
+        }
+        return users;
     }
 
     protected void queryWorkouts() {
@@ -157,5 +231,33 @@ public class ProfileFragment extends Fragment {
                 adapter.notifyDataSetChanged();
             }
         });
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    protected void updateStreak(ParseUser user) {
+        Date lastWorkout = user.getDate("lastWorkout");
+        int streak = user.getInt("streak");     // current daily streak
+        long timeDifference = 0;
+        final long SECONDS_IN_DAY = 86400;
+
+        if (lastWorkout != null) {
+            // calculate difference in days since last workout
+            LocalDate today = LocalDate.now();
+            long todayTime = today.atStartOfDay(ZoneId.systemDefault()).toEpochSecond();
+
+            LocalDate recentWorkout = lastWorkout.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+            long recentWorkoutTime = recentWorkout.atStartOfDay(ZoneId.systemDefault()).toEpochSecond();
+
+            timeDifference = todayTime - recentWorkoutTime;
+        }
+
+        // reset streak to 0 if more than 1 day has past since working out
+        if (lastWorkout == null || timeDifference > SECONDS_IN_DAY) {
+            streak = 0;
+        }
+
+        // save to database
+        user.put("streak", streak);
+        user.saveInBackground();
     }
 }

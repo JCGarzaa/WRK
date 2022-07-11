@@ -209,14 +209,7 @@ public class ScratchCreateActivity extends AppCompatActivity {
         template.setTitle(title);
         template.setComponents(components);
         template.setSavedBy(savedBy);
-        template.saveInBackground(new SaveCallback() {
-            @Override
-            public void done(ParseException e) {
-                if (e != null) {
-                    Toast.makeText(ScratchCreateActivity.this, "Error while saving template", Toast.LENGTH_SHORT).show();
-                }
-            }
-        });
+        template.save();
     }
 
     private void queryComponents(WorkoutTemplate template) throws ParseException, JSONException {
