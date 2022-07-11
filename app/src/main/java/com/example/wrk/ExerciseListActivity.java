@@ -22,11 +22,11 @@ import java.util.List;
 // This activity shows a list of exercises to choose from that will be added to the template builder
 public class ExerciseListActivity extends AppCompatActivity {
     public static final String TAG = "ExerciseListActivity";
-    RecyclerView rvExercises;
-    List<Exercise> exerciseList;
-    ExerciseListAdapter adapter;
-    FloatingActionButton fabCreateNewExercise;
-    CreateExerciseDialogFragment createExerciseDialogFragment;
+    public ExerciseListAdapter adapter;
+    private RecyclerView rvExercises;
+    private List<Exercise> exerciseList;
+    private FloatingActionButton fabCreateNewExercise;
+    private CreateExerciseDialogFragment createExerciseDialogFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,13 +49,11 @@ public class ExerciseListActivity extends AppCompatActivity {
         queryExercises();
     }
 
-    protected void queryExercises() {
+    public void queryExercises() {
         ParseQuery<Exercise> exerciseQuery = ParseQuery.getQuery(Exercise.class);
         // includes specified data
         exerciseQuery.include(Exercise.KEY_NAME);
         exerciseQuery.include(Exercise.KEY_BODYPART);
-        // limits number of items to generate
-        exerciseQuery.setLimit(10);
         // alphabetical order
         exerciseQuery.addAscendingOrder(Exercise.KEY_NAME);
         // async call for exercises
@@ -74,8 +72,10 @@ public class ExerciseListActivity extends AppCompatActivity {
     }
 
     private void showExerciseDialog() {
-        createExerciseDialogFragment = new CreateExerciseDialogFragment();
+        createExerciseDialogFragment = new CreateExerciseDialogFragment(this);
         FragmentManager fm = getSupportFragmentManager();
         createExerciseDialogFragment.show(fm, "fragment_create_exercise_dialog");
+        exerciseList.clear();
+        queryExercises();
     }
 }
