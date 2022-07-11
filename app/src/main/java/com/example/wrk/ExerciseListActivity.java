@@ -49,7 +49,7 @@ public class ExerciseListActivity extends AppCompatActivity {
         queryAllExercises();
     }
 
-    protected void queryAllExercises() {
+    public void queryAllExercises() {
         ParseQuery<Exercise> exerciseQuery = ParseQuery.getQuery(Exercise.class);
         // includes specified data
         exerciseQuery.include(Exercise.KEY_NAME);

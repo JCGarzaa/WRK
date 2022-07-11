@@ -84,7 +84,7 @@ public class CreateExerciseDialogFragment extends DialogFragment {
                             e.printStackTrace();
                         }
                         activity.adapter.clear();
-                        activity.queryExercises();
+                        activity.queryAllExercises();
                         activity.adapter.notifyDataSetChanged();
                         dismiss();
 
