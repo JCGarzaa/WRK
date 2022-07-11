@@ -72,7 +72,7 @@ public class ExerciseListActivity extends AppCompatActivity {
     }
 
     private void showExerciseDialog() {
-        createExerciseDialogFragment = new CreateExerciseDialogFragment();
+        createExerciseDialogFragment = new CreateExerciseDialogFragment(this);
         FragmentManager fm = getSupportFragmentManager();
         createExerciseDialogFragment.show(fm, "fragment_create_exercise_dialog");
         exerciseList.clear();
