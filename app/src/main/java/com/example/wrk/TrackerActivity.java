@@ -1,11 +1,13 @@
 package com.example.wrk;
 
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -27,7 +29,10 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.parceler.Parcels;
 
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.ArrayList;
+import java.util.Date;
 
 public class TrackerActivity extends AppCompatActivity {
     EditText etTrackerWorkoutTitle;
@@ -65,6 +70,7 @@ public class TrackerActivity extends AppCompatActivity {
         });
 
         btnFinish.setOnClickListener(new View.OnClickListener() {
+            @RequiresApi(api = Build.VERSION_CODES.O)
             @Override
             public void onClick(View v) {
 
@@ -85,6 +91,7 @@ public class TrackerActivity extends AppCompatActivity {
                     Toast.makeText(TrackerActivity.this, "Please enter a title.", Toast.LENGTH_SHORT).show();
                 }
                 publishWorkout();           // save to database and post to feed
+                updateUserStreak();
                 Intent i = new Intent(TrackerActivity.this, MainActivity.class);
                 startActivity(i);
             }
@@ -133,10 +140,42 @@ public class TrackerActivity extends AppCompatActivity {
             public void done(ParseException e) {
                 if (e != null) {
                     Toast.makeText(TrackerActivity.this, "Error while publishing to feed.", Toast.LENGTH_SHORT).show();
-                    return;
                 }
             }
         });
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    private void updateUserStreak() {
+        Date lastWorkout = ParseUser.getCurrentUser().getDate("lastWorkout");
+        int streak = ParseUser.getCurrentUser().getInt("streak");       // current daily streak
+        long timeDifference = 0;
+
+        final long SECONDS_IN_DAY = 86400;
+
+        LocalDate today = LocalDate.now();
+        long todayTime = today.atStartOfDay(ZoneId.systemDefault()).toEpochSecond();
+
+        // calculate difference in days since last workout
+        if (lastWorkout != null) {
+            LocalDate recentWorkout = lastWorkout.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+            long recentWorkoutTime = recentWorkout.atStartOfDay(ZoneId.systemDefault()).toEpochSecond();
+            timeDifference = todayTime - recentWorkoutTime;
+        }
+
+        // increment streak only if there is a 1 day difference since the last workout.
+        if (lastWorkout != null && timeDifference == SECONDS_IN_DAY) {
+            streak++;           // increment streak by 1
+        }
+        // reset streak to 1 if more than 1 day has past since working out since completing workout
+        else if (lastWorkout != null && timeDifference > SECONDS_IN_DAY){
+            streak = 1;         // reset to 1 since completing the workout
+        }
+
+        // save to database
+        ParseUser.getCurrentUser().put("streak", streak);
+        ParseUser.getCurrentUser().put("lastWorkout", new Date());  // put date object of current time
+        ParseUser.getCurrentUser().saveInBackground();
     }
 
     private void queryComponents(WorkoutTemplate template) throws ParseException, JSONException {
