@@ -78,16 +78,11 @@ public class CreateExerciseDialogFragment extends DialogFragment {
                             }
                         }
                         exercise.setBodyPart(selectedBodyPart);
-                        try {
-                            exercise.save();
-                        } catch (ParseException e) {
-                            e.printStackTrace();
-                        }
+                        exercise.saveInBackground();
                         activity.adapter.clear();
                         activity.queryAllExercises();
                         activity.adapter.notifyDataSetChanged();
-                        dismiss();
-
+                        dismiss();      // return to parent activity
                     }
                     else {
                         Toast.makeText(getContext(), "Please select a body part.", Toast.LENGTH_SHORT).show();
