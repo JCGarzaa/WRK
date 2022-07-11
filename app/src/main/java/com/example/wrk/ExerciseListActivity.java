@@ -46,10 +46,10 @@ public class ExerciseListActivity extends AppCompatActivity {
                 showExerciseDialog();
             }
         });
-        queryExercises();
+        queryAllExercises();
     }
 
-    public void queryExercises() {
+    protected void queryAllExercises() {
         ParseQuery<Exercise> exerciseQuery = ParseQuery.getQuery(Exercise.class);
         // includes specified data
         exerciseQuery.include(Exercise.KEY_NAME);
@@ -72,10 +72,10 @@ public class ExerciseListActivity extends AppCompatActivity {
     }
 
     private void showExerciseDialog() {
-        createExerciseDialogFragment = new CreateExerciseDialogFragment(this);
+        createExerciseDialogFragment = new CreateExerciseDialogFragment();
         FragmentManager fm = getSupportFragmentManager();
         createExerciseDialogFragment.show(fm, "fragment_create_exercise_dialog");
         exerciseList.clear();
-        queryExercises();
+        queryAllExercises();
     }
 }
