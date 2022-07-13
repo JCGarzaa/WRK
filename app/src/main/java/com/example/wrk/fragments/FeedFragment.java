@@ -39,6 +39,7 @@ public class FeedFragment extends Fragment {
     private RecyclerView rvWorkouts;
     protected List<WorkoutPerformed> workoutsPerformed;
     protected List<WorkoutPerformed> recentFollowedWorkouts;
+    protected List<ParseUser> recentFollowedUsers;
     protected List<WorkoutTemplate> popularTemplates;
     protected List<WorkoutPerformed> mostPopularWorkouts;
     protected  WorkoutsAdapter adapter;
@@ -102,11 +103,12 @@ public class FeedFragment extends Fragment {
         performedQuery.include(WorkoutPerformed.KEY_WORKOUT);
         performedQuery.addDescendingOrder(WorkoutPerformed.KEY_CREATED_AT);
         performedQuery.setLimit(5);
-        // specify workouts
+        // specify workouts from the user's following list
         performedQuery.whereContainedIn(WorkoutPerformed.KEY_USER, ParseUser.getCurrentUser().getList("following"));
 
         List<WorkoutPerformed> list = new ArrayList<>();
         recentFollowedWorkouts = new ArrayList<>();
+        recentFollowedUsers = new ArrayList<>();
         list.addAll(performedQuery.find());
         for (int i = 0; i < list.size(); i++) {
             LocalDate postDate = list.get(i)
@@ -114,6 +116,7 @@ public class FeedFragment extends Fragment {
             // only add the posts within the past 2 days
             if (postDate.isAfter(daysAgoDate)) {
                 recentFollowedWorkouts.add(list.get(i));
+                recentFollowedUsers.add(list.get(i).getUser());
             }
         }
         workoutsPerformed.addAll(recentFollowedWorkouts);
@@ -178,14 +181,13 @@ public class FeedFragment extends Fragment {
         performedQuery.include(WorkoutPerformed.KEY_USER);
         performedQuery.include(WorkoutPerformed.KEY_WORKOUT);
         // to remove posts that have already been added
-        performedQuery.whereNotContainedIn(WorkoutPerformed.KEY_USER, recentFollowedWorkouts);
-        performedQuery.whereNotContainedIn(WorkoutPerformed.KEY_WORKOUT, mostPopularWorkouts);
+        performedQuery.whereNotContainedIn(WorkoutPerformed.KEY_USER, recentFollowedUsers);
+        performedQuery.whereNotContainedIn(WorkoutPerformed.KEY_WORKOUT, popularTemplates);
         // limits number of items to generate
         performedQuery.setLimit(4);
         // order by creation date (newest first)
         performedQuery.addDescendingOrder("createdAt");
         // async call for posts
         workoutsPerformed.addAll(performedQuery.find());
-        Log.d(TAG, "OTHER POSTS COUNT: " + performedQuery.find().size());
     }
 }
