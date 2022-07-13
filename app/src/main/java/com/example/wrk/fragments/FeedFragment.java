@@ -158,6 +158,8 @@ public class FeedFragment extends Fragment {
         parseQuery.include(WorkoutPerformed.KEY_WORKOUT);
         // look for posts that are within the popular templates
         parseQuery.whereContainedIn(WorkoutPerformed.KEY_WORKOUT, popularTemplates);
+        // remove any posts that already exists
+        parseQuery.whereNotContainedIn(WorkoutPerformed.KEY_USER, recentFollowedUsers); // in the case that user's followed recent posts are also popular
         // newest first
         parseQuery.addDescendingOrder(WorkoutPerformed.KEY_CREATED_AT);
         mostPopularWorkouts.addAll(parseQuery.find());
