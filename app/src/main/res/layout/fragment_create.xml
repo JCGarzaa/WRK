@@ -26,6 +26,7 @@
             android:id="@+id/fabCreate"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:backgroundTint="@color/red_dark"
             android:clickable="true"
             android:src="@drawable/plus"
             app:fabSize="mini"
@@ -38,6 +39,7 @@
             android:layout_height="wrap_content"
             android:text="Workout Creator"
             android:textAppearance="@style/TextAppearance.AppCompat.Display1"
+            android:textColor="@color/purple"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />

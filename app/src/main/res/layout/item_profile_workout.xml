@@ -25,6 +25,7 @@
             android:layout_centerInParent="true"
             android:layout_marginStart="8dp"
             android:textAppearance="@style/TextAppearance.AppCompat.Display1"
+            android:textColor="@color/red_dark"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             tools:text="TITLE" />
@@ -36,6 +37,7 @@
             android:layout_marginStart="8dp"
             android:layout_marginBottom="2dp"
             android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+            android:textColor="@color/purple_dark"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/tvProfileWorkoutTitle"
