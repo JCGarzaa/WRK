@@ -12,6 +12,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:layout_marginTop="24dp"
+        android:textColor="@color/purple"
         app:layout_constraintStart_toEndOf="@+id/ivFeedPFP"
         app:layout_constraintTop_toTopOf="parent"
         tools:text="JC Garza" />
@@ -45,7 +46,10 @@
 
             <TextView
                 android:id="@+id/tvWorkoutTitle"
+                android:layout_width="match_parent"
                 android:textAlignment="center"
+                android:textColor="@color/red_dark"
+                android:textSize="24sp"
                 android:textStyle="bold"
                 tools:text="Chest Day" />
         </TableRow>
@@ -57,29 +61,21 @@
             <TextView
                 android:padding="3dp"
                 android:text="Exercise name"
+                android:textColor="@color/purple"
                 android:textStyle="bold" />
 
             <TextView
                 android:padding="3dp"
                 android:text="Sets"
+                android:textColor="@color/purple"
                 android:textStyle="bold" />
 
             <TextView
                 android:padding="3dp"
                 android:text="Reps"
+                android:textColor="@color/purple"
                 android:textStyle="bold" />
         </TableRow>
 
-        <TableRow
-            android:layout_width="match_parent"
-            android:layout_height="match_parent" />
-
-        <TableRow
-            android:layout_width="match_parent"
-            android:layout_height="match_parent" />
-
-        <TableRow
-            android:layout_width="match_parent"
-            android:layout_height="match_parent" />
     </TableLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>
