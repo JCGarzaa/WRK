@@ -14,6 +14,9 @@ import com.parse.ParseException;
 import com.parse.ParseUser;
 import com.parse.SignUpCallback;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class RegisterActivity extends AppCompatActivity {
     private EditText etRegName;
     private EditText etRegUsername;
@@ -53,6 +56,11 @@ public class RegisterActivity extends AppCompatActivity {
                         finish();
                     }
                 });
+                // assign following list with new user so they will see their posts at top of feed when created
+                List<ParseUser> list = new ArrayList<>();
+                list.add(user);
+                user.put("following", list);
+                user.saveInBackground();
             }
         });
     }

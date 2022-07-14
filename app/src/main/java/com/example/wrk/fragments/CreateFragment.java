@@ -121,8 +121,6 @@ public class CreateFragment extends Fragment {
         templatesQuery.include(WorkoutTemplate.KEY_TITLE);
         templatesQuery.include(WorkoutTemplate.KEY_COMPONENTS);
         templatesQuery.include(WorkoutTemplate.KEY_SAVED_BY);
-        // limits number of items to generate
-        templatesQuery.setLimit(6);
         // order by creation date (newest first)
         templatesQuery.addDescendingOrder("createdAt");
         // async call for posts

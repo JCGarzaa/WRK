@@ -20,6 +20,7 @@ import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
@@ -33,6 +34,7 @@ import com.parse.ParseException;
 import com.parse.ParseFile;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
+import com.parse.SaveCallback;
 
 import java.time.LocalDate;
 import java.time.ZoneId;
@@ -187,7 +189,14 @@ public class ProfileFragment extends Fragment {
         ParseUser currentUser = ParseUser.getCurrentUser();
         followingList.add(user);        // add user to currentUsers follow list
         currentUser.put("following", followingList);
-        currentUser.saveInBackground();
+        currentUser.saveInBackground(new SaveCallback() {
+            @Override
+            public void done(ParseException e) {
+                if (e != null) {
+                    Toast.makeText(mainActivity, "Error saving user.", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
     }
 
     private boolean isFollowedByCurrentUser() {
