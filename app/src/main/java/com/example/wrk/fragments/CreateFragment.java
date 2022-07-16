@@ -17,6 +17,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewAnimationUtils;
 import android.view.ViewGroup;
+import android.widget.ProgressBar;
 
 import com.example.wrk.CreateAdapter;
 import com.example.wrk.R;
@@ -38,6 +39,7 @@ public class CreateFragment extends Fragment {
     private FloatingActionButton fabCreate;
     private Transition.TransitionListener mEnterTransitionListener;
     private RecyclerView rvSavedWorkouts;
+    private ProgressBar progressBar;
     protected CreateAdapter adapter;
     protected List<WorkoutTemplate> savedTemplates;
 
@@ -96,6 +98,7 @@ public class CreateFragment extends Fragment {
                 startActivity(i);
             }
         });
+        progressBar = view.findViewById(R.id.pbCreateLoad);
 
         rvSavedWorkouts = view.findViewById(R.id.rvSavedWorkouts);
         adapter = new CreateAdapter(getContext(), savedTemplates);
@@ -133,6 +136,7 @@ public class CreateFragment extends Fragment {
                 }
                 // save received posts to list and notify adapter of new data
                 savedTemplates.clear();
+                progressBar.setVisibility(View.GONE);
                 savedTemplates.addAll(template);
                 adapter.notifyDataSetChanged();
             }

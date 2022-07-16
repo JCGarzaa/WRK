@@ -55,6 +55,7 @@ public class ProfileFragment extends Fragment {
     private ImageButton ibGymsNearMe;
     private ImageButton ibFollow;
     private RecyclerView rvPrevWorkouts;
+    private ProgressBar progressBar;
     protected ProfileAdapter adapter;
     protected List<WorkoutPerformed> workoutsPerformed;
 

@@ -2,6 +2,7 @@ package com.example.wrk;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.graphics.Color;
 import android.os.Build;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -21,6 +22,7 @@ import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
 import com.example.wrk.fragments.ProfileFragment;
 import com.example.wrk.models.WorkoutComponent;
 import com.example.wrk.models.WorkoutPerformed;
@@ -103,7 +105,18 @@ public class WorkoutsAdapter extends RecyclerView.Adapter<WorkoutsAdapter.ViewHo
             tvName.setText(workoutPerformed.getUser().getUsername());
             ParseFile image = workoutPerformed.getPFP();
             if (image != null) {
-                Glide.with(mainActivity).load(workoutPerformed.getPFP().getUrl()).into(ivFeedPFP);
+                Glide.with(mainActivity)
+                        .load(workoutPerformed.getPFP().getUrl())
+                        .transform(new RoundedCorners(150))
+                        .into(ivFeedPFP);
+            }
+            else {
+                // upload a default picture
+                Glide.with(mainActivity)
+                        .load(R.drawable.instagram_user_outline_24)
+                        .centerCrop()
+                        .transform(new RoundedCorners(150))
+                        .into(ivFeedPFP);
             }
             String title = workoutPerformed.getWorkout().getTitle();
             tvWorkoutTitle.setText(title);     // title of workout
@@ -120,12 +133,15 @@ public class WorkoutsAdapter extends RecyclerView.Adapter<WorkoutsAdapter.ViewHo
                 TableRow tbrow = new TableRow(tableContext);
                 // For each row, add 3 textviews for exercise name, sets, and reps
                 TextView tvExercise = new TextView(tableContext);
+                tvExercise.setTextColor(mainActivity.getResources().getColor(R.color.red_light));
                 tvExercise.setText(name);
                 tbrow.addView(tvExercise);
                 TextView tvSets = new TextView(tableContext);
+                tvSets.setTextColor(mainActivity.getResources().getColor(R.color.red_light));
                 tvSets.setText(String.valueOf(sets));
                 tbrow.addView(tvSets);
                 TextView tvReps = new TextView(tableContext);
+                tvReps.setTextColor(mainActivity.getResources().getColor(R.color.red_light));
                 tvReps.setText(String.valueOf(reps));
                 tbrow.addView(tvReps);
 
