@@ -95,6 +95,7 @@ public class ScratchCreateAdapter extends RecyclerView.Adapter<ScratchCreateAdap
                 // set number column
                 TextView tvSetNum = new TextView(tableContext);
                 tvSetNum.setText(String.valueOf(i));
+                tvSetNum.setTextColor(mContext.getResources().getColor(R.color.purple_light));
                 tbrow.addView(tvSetNum);
                 // previous weight column
                 tvPrevWeight = new TextView(tableContext);
@@ -150,6 +151,7 @@ public class ScratchCreateAdapter extends RecyclerView.Adapter<ScratchCreateAdap
                     // set number column
                     TextView tvSetNum = new TextView(tableContext);
                     tvSetNum.setText(String.valueOf(component.getSets() + 1));
+                    tvSetNum.setTextColor(mContext.getResources().getColor(R.color.purple_light));
                     component.setSets(component.getSets() + 1);     // update number of sets for component
                     tbrow.addView(tvSetNum);
                     // previous weight column

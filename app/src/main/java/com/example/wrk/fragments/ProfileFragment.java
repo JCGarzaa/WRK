@@ -19,6 +19,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -52,9 +53,11 @@ public class ProfileFragment extends Fragment {
     private TextView tvProfileName;
     private TextView tvProfileUsername;
     private TextView tvDailyStreak;
+    private TextView tvWorkoutsThisMonth;
     private ImageButton ibGymsNearMe;
     private ImageButton ibFollow;
     private RecyclerView rvPrevWorkouts;
+    private ProgressBar progressBar;
     protected ProfileAdapter adapter;
     protected List<WorkoutPerformed> workoutsPerformed;
 
@@ -85,6 +88,7 @@ public class ProfileFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         ivProfilePicture = view.findViewById(R.id.ivProfilePicture);
+        progressBar = view.findViewById(R.id.pbLoading);
 
         ParseFile file = user.getParseFile("profilePic");
         // check if there is a profile picture that the user has
@@ -110,9 +114,11 @@ public class ProfileFragment extends Fragment {
         tvProfileUsername = view.findViewById(R.id.tvProfileUsername);
         tvProfileUsername.setText(user.getUsername());
 
-        updateStreak(user);     // check each time someone visits a profile
         tvDailyStreak = view.findViewById(R.id.tvDailyStreak);
         tvDailyStreak.setText(String.valueOf(user.getInt("streak")));
+
+        tvWorkoutsThisMonth = view.findViewById(R.id.tvWorkoutsThisMonth);
+        tvWorkoutsThisMonth.setText(String.valueOf(user.getInt("workoutsThisMonth")));
 
         btnLogout = view.findViewById(R.id.btnLogout);
         btnLogout.setOnClickListener(new View.OnClickListener() {
@@ -124,6 +130,7 @@ public class ProfileFragment extends Fragment {
         });
 
         if (user.hasSameId(ParseUser.getCurrentUser())) {
+            updateStreak(user);
             // send user to their profile page if they click on their own profile
             ibGymsNearMe = view.findViewById(R.id.ibProfile);
             ibGymsNearMe.setOnClickListener(new View.OnClickListener() {
@@ -200,7 +207,7 @@ public class ProfileFragment extends Fragment {
     }
 
     private boolean isFollowedByCurrentUser() {
-        List <ParseUser> following = getFollowing();
+        List<ParseUser> following = getFollowing();
         for (int i = 0; i< following.size(); i++) {
             if (following.get(i).hasSameId(user)) {
                 return true;
@@ -224,7 +231,7 @@ public class ProfileFragment extends Fragment {
         performedQuery.include(WorkoutPerformed.KEY_USER);
         performedQuery.include(WorkoutPerformed.KEY_WORKOUT);
         // limits number of items to generate
-        performedQuery.setLimit(6);
+        performedQuery.setLimit(4);
         // order by creation date (newest first)
         performedQuery.addDescendingOrder("createdAt");
         // async call for posts
@@ -235,6 +242,7 @@ public class ProfileFragment extends Fragment {
                     Log.e(TAG, "Error with fetching workouts. ", e);
                     return;
                 }
+                progressBar.setVisibility(View.GONE);   // hide progress bar
                 // save received posts to list and notify adapter of new data
                 workoutsPerformed.addAll(workouts);
                 adapter.notifyDataSetChanged();
@@ -246,16 +254,20 @@ public class ProfileFragment extends Fragment {
     protected void updateStreak(ParseUser user) {
         Date lastWorkout = user.getDate("lastWorkout");
         int streak = user.getInt("streak");     // current daily streak
+        int workoutsThisMonth = user.getInt("workoutsThisMonth");   // current number workouts this month
+        int lastWorkoutMonth = -1;      // initialize in case of null
         long timeDifference = 0;
         final long SECONDS_IN_DAY = 86400;
+        LocalDate today = LocalDate.now();
+        int currentMonth = today.getMonthValue();
 
         if (lastWorkout != null) {
             // calculate difference in days since last workout
-            LocalDate today = LocalDate.now();
             long todayTime = today.atStartOfDay(ZoneId.systemDefault()).toEpochSecond();
 
             LocalDate recentWorkout = lastWorkout.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
             long recentWorkoutTime = recentWorkout.atStartOfDay(ZoneId.systemDefault()).toEpochSecond();
+            lastWorkoutMonth = recentWorkout.getMonthValue();
 
             timeDifference = todayTime - recentWorkoutTime;
         }
@@ -264,9 +276,14 @@ public class ProfileFragment extends Fragment {
         if (lastWorkout == null || timeDifference > SECONDS_IN_DAY) {
             streak = 0;
         }
+        // reset workouts this month to 0 if new month has started and no workouts
+        if (lastWorkoutMonth != currentMonth) {
+            workoutsThisMonth = 0;
+        }
 
         // save to database
         user.put("streak", streak);
+        user.put("workoutsThisMonth", workoutsThisMonth);
         user.saveInBackground();
     }
 }

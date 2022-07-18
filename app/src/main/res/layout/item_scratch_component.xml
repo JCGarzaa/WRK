@@ -25,6 +25,7 @@
                 android:id="@+id/tvExerciseName"
                 android:layout_width="150dp"
                 android:textAlignment="center"
+                android:textColor="@color/purple"
                 android:textStyle="bold"
                 tools:text="Bench Press" />
         </TableRow>
@@ -37,24 +38,28 @@
                 android:layout_width="70dp"
                 android:padding="3dp"
                 android:text="Set"
+                android:textColor="@color/purple"
                 android:textStyle="bold" />
 
             <TextView
                 android:layout_width="93dp"
                 android:padding="3dp"
                 android:text="Previous"
+                android:textColor="@color/purple"
                 android:textStyle="bold" />
 
             <TextView
                 android:layout_width="match_parent"
                 android:padding="3dp"
                 android:text="Weight (lbs)"
+                android:textColor="@color/purple"
                 android:textStyle="bold" />
 
             <TextView
                 android:layout_width="match_parent"
                 android:padding="3dp"
                 android:text="Reps"
+                android:textColor="@color/purple"
                 android:textStyle="bold" />
         </TableRow>
 

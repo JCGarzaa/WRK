@@ -9,6 +9,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -149,6 +150,8 @@ public class TrackerActivity extends AppCompatActivity {
     private void updateUserStreak() {
         Date lastWorkout = ParseUser.getCurrentUser().getDate("lastWorkout");
         int streak = ParseUser.getCurrentUser().getInt("streak");       // current daily streak
+        int workoutsThisMonth = ParseUser.getCurrentUser().getInt("workoutsThisMonth");
+        int lastWorkoutMonth = -1;      // initialize to -1 in case null
         long timeDifference = 0;
 
         final long SECONDS_IN_DAY = 86400;
@@ -160,6 +163,7 @@ public class TrackerActivity extends AppCompatActivity {
         if (lastWorkout != null) {
             LocalDate recentWorkout = lastWorkout.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
             long recentWorkoutTime = recentWorkout.atStartOfDay(ZoneId.systemDefault()).toEpochSecond();
+            lastWorkoutMonth = recentWorkout.getMonthValue();
             timeDifference = todayTime - recentWorkoutTime;
         }
 
@@ -168,12 +172,20 @@ public class TrackerActivity extends AppCompatActivity {
             streak++;           // increment streak by 1
         }
         // reset streak to 1 if more than 1 day has past since working out since completing workout
-        else if (lastWorkout != null && timeDifference > SECONDS_IN_DAY){
+        else if (lastWorkout == null || timeDifference > SECONDS_IN_DAY){
             streak = 1;         // reset to 1 since completing the workout
+        }
+        // increment workoutsThisMonth if month has not changed
+        if (lastWorkoutMonth == today.getMonthValue() && lastWorkoutMonth != -1) {
+            workoutsThisMonth++;
+        }
+        else {
+            workoutsThisMonth =  1;
         }
 
         // save to database
         ParseUser.getCurrentUser().put("streak", streak);
+        ParseUser.getCurrentUser().put("workoutsThisMonth", workoutsThisMonth);
         ParseUser.getCurrentUser().put("lastWorkout", new Date());  // put date object of current time
         ParseUser.getCurrentUser().saveInBackground();
     }
