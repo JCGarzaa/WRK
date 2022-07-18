@@ -9,6 +9,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -171,7 +172,7 @@ public class TrackerActivity extends AppCompatActivity {
             streak++;           // increment streak by 1
         }
         // reset streak to 1 if more than 1 day has past since working out since completing workout
-        else if (lastWorkout != null && timeDifference > SECONDS_IN_DAY){
+        else if (lastWorkout == null || timeDifference > SECONDS_IN_DAY){
             streak = 1;         // reset to 1 since completing the workout
         }
         // increment workoutsThisMonth if month has not changed

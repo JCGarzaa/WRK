@@ -19,6 +19,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -56,6 +57,7 @@ public class ProfileFragment extends Fragment {
     private ImageButton ibGymsNearMe;
     private ImageButton ibFollow;
     private RecyclerView rvPrevWorkouts;
+    private ProgressBar progressBar;
     protected ProfileAdapter adapter;
     protected List<WorkoutPerformed> workoutsPerformed;
 
@@ -86,6 +88,7 @@ public class ProfileFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         ivProfilePicture = view.findViewById(R.id.ivProfilePicture);
+        progressBar = view.findViewById(R.id.pbLoading);
 
         ParseFile file = user.getParseFile("profilePic");
         // check if there is a profile picture that the user has
@@ -111,7 +114,6 @@ public class ProfileFragment extends Fragment {
         tvProfileUsername = view.findViewById(R.id.tvProfileUsername);
         tvProfileUsername.setText(user.getUsername());
 
-        updateStreak(user);     // check each time someone visits a profile
         tvDailyStreak = view.findViewById(R.id.tvDailyStreak);
         tvDailyStreak.setText(String.valueOf(user.getInt("streak")));
 
@@ -128,6 +130,7 @@ public class ProfileFragment extends Fragment {
         });
 
         if (user.hasSameId(ParseUser.getCurrentUser())) {
+            updateStreak(user);
             // send user to their profile page if they click on their own profile
             ibGymsNearMe = view.findViewById(R.id.ibProfile);
             ibGymsNearMe.setOnClickListener(new View.OnClickListener() {
@@ -204,7 +207,7 @@ public class ProfileFragment extends Fragment {
     }
 
     private boolean isFollowedByCurrentUser() {
-        List <ParseUser> following = getFollowing();
+        List<ParseUser> following = getFollowing();
         for (int i = 0; i< following.size(); i++) {
             if (following.get(i).hasSameId(user)) {
                 return true;
@@ -228,7 +231,7 @@ public class ProfileFragment extends Fragment {
         performedQuery.include(WorkoutPerformed.KEY_USER);
         performedQuery.include(WorkoutPerformed.KEY_WORKOUT);
         // limits number of items to generate
-        performedQuery.setLimit(6);
+        performedQuery.setLimit(4);
         // order by creation date (newest first)
         performedQuery.addDescendingOrder("createdAt");
         // async call for posts
@@ -239,6 +242,7 @@ public class ProfileFragment extends Fragment {
                     Log.e(TAG, "Error with fetching workouts. ", e);
                     return;
                 }
+                progressBar.setVisibility(View.GONE);   // hide progress bar
                 // save received posts to list and notify adapter of new data
                 workoutsPerformed.addAll(workouts);
                 adapter.notifyDataSetChanged();
