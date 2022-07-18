@@ -3,6 +3,8 @@ package com.example.wrk;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Color;
+import android.graphics.drawable.AnimatedVectorDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -20,6 +22,7 @@ import androidx.annotation.RequiresApi;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.vectordrawable.graphics.drawable.AnimatedVectorDrawableCompat;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
@@ -89,6 +92,9 @@ public class WorkoutsAdapter extends RecyclerView.Adapter<WorkoutsAdapter.ViewHo
         private ImageView ivFeedPFP;
         private TableLayout tlWorkouts;
         private TextView tvWorkoutTitle;
+        private ImageView ivBicep;
+        private AnimatedVectorDrawableCompat avd;
+        private AnimatedVectorDrawable avd2;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -96,6 +102,7 @@ public class WorkoutsAdapter extends RecyclerView.Adapter<WorkoutsAdapter.ViewHo
             ivFeedPFP = itemView.findViewById(R.id.ivFeedPFP);
             tlWorkouts = itemView.findViewById(R.id.tlWorkouts);
             tvWorkoutTitle = itemView.findViewById(R.id.tvWorkoutTitle);
+            ivBicep = itemView.findViewById(R.id.ivBicep);
         }
 
         @SuppressLint("ClickableViewAccessibility")
@@ -156,7 +163,17 @@ public class WorkoutsAdapter extends RecyclerView.Adapter<WorkoutsAdapter.ViewHo
                     WorkoutTemplate tappedTemplate = workoutPerformed.getWorkout();
                     if (!tappedTemplate.isSavedByCurrentUser()) {
                         tappedTemplate.saveUserTemplate();
-                        Toast.makeText(mainActivity, "Saved " + tappedTemplate.getTitle() + " to your templates.", Toast.LENGTH_SHORT).show();
+                        final Drawable drawable = ivBicep.getDrawable();
+                        ivBicep.setAlpha(0.7f);
+                        if (drawable instanceof AnimatedVectorDrawableCompat) {
+                            avd = (AnimatedVectorDrawableCompat) drawable;
+                            avd.start();    // start animation
+                        }
+                        // for other devices
+                        else if (drawable instanceof AnimatedVectorDrawable) {
+                            avd2 = (AnimatedVectorDrawable) drawable;
+                            avd2.start();
+                        }
                     }
                     else {
                         Toast.makeText(mainActivity, "You already have this template saved.", Toast.LENGTH_SHORT).show();
