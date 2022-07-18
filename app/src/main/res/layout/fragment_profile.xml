@@ -128,6 +128,25 @@
             app:layout_constraintTop_toBottomOf="@+id/tvDailyStreak"
             tools:text="Previous Workouts" />
 
+        <TextView
+            android:id="@+id/tvWorkoutsThisMonthTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="16dp"
+            android:text="Workouts This Month"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/tvStreakTitle" />
+
+        <TextView
+            android:id="@+id/tvWorkoutsThisMonth"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="16dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tvWorkoutsThisMonthTitle"
+            tools:text="20 Workouts" />
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 </FrameLayout>

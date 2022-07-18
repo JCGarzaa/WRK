@@ -53,6 +53,7 @@ public class ProfileFragment extends Fragment {
     private TextView tvProfileName;
     private TextView tvProfileUsername;
     private TextView tvDailyStreak;
+    private TextView tvWorkoutsThisMonth;
     private ImageButton ibGymsNearMe;
     private ImageButton ibFollow;
     private RecyclerView rvPrevWorkouts;
@@ -115,6 +116,9 @@ public class ProfileFragment extends Fragment {
 
         tvDailyStreak = view.findViewById(R.id.tvDailyStreak);
         tvDailyStreak.setText(String.valueOf(user.getInt("streak")));
+
+        tvWorkoutsThisMonth = view.findViewById(R.id.tvWorkoutsThisMonth);
+        tvWorkoutsThisMonth.setText(String.valueOf(user.getInt("workoutsThisMonth")));
 
         btnLogout = view.findViewById(R.id.btnLogout);
         btnLogout.setOnClickListener(new View.OnClickListener() {
@@ -250,16 +254,20 @@ public class ProfileFragment extends Fragment {
     protected void updateStreak(ParseUser user) {
         Date lastWorkout = user.getDate("lastWorkout");
         int streak = user.getInt("streak");     // current daily streak
+        int workoutsThisMonth = user.getInt("workoutsThisMonth");   // current number workouts this month
+        int lastWorkoutMonth = -1;      // initialize in case of null
         long timeDifference = 0;
         final long SECONDS_IN_DAY = 86400;
+        LocalDate today = LocalDate.now();
+        int currentMonth = today.getMonthValue();
 
         if (lastWorkout != null) {
             // calculate difference in days since last workout
-            LocalDate today = LocalDate.now();
             long todayTime = today.atStartOfDay(ZoneId.systemDefault()).toEpochSecond();
 
             LocalDate recentWorkout = lastWorkout.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
             long recentWorkoutTime = recentWorkout.atStartOfDay(ZoneId.systemDefault()).toEpochSecond();
+            lastWorkoutMonth = recentWorkout.getMonthValue();
 
             timeDifference = todayTime - recentWorkoutTime;
         }
@@ -268,9 +276,14 @@ public class ProfileFragment extends Fragment {
         if (lastWorkout == null || timeDifference > SECONDS_IN_DAY) {
             streak = 0;
         }
+        // reset workouts this month to 0 if new month has started and no workouts
+        if (lastWorkoutMonth != currentMonth) {
+            workoutsThisMonth = 0;
+        }
 
         // save to database
         user.put("streak", streak);
+        user.put("workoutsThisMonth", workoutsThisMonth);
         user.saveInBackground();
     }
 }
