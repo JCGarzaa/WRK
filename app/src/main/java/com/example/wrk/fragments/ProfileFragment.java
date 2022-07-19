@@ -102,7 +102,7 @@ public class ProfileFragment extends Fragment {
         else {
             // upload a default picture
             Glide.with(getContext())
-                    .load(R.drawable.instagram_user_outline_24)
+                    .load(R.drawable.instagram_user_filled_24)
                     .centerCrop()
                     .transform(new RoundedCorners(150))
                     .into(ivProfilePicture);

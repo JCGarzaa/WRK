@@ -117,7 +117,7 @@ public class WorkoutsAdapter extends RecyclerView.Adapter<WorkoutsAdapter.ViewHo
             else {
                 // upload a default picture
                 Glide.with(mainActivity)
-                        .load(R.drawable.instagram_user_outline_24)
+                        .load(R.drawable.account)
                         .centerCrop()
                         .transform(new RoundedCorners(150))
                         .into(ivFeedPFP);
