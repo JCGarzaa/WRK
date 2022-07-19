@@ -89,6 +89,7 @@ public class WorkoutsAdapter extends RecyclerView.Adapter<WorkoutsAdapter.ViewHo
         private ImageView ivFeedPFP;
         private TableLayout tlWorkouts;
         private TextView tvWorkoutTitle;
+        private TextView tvTimestamp;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -96,6 +97,7 @@ public class WorkoutsAdapter extends RecyclerView.Adapter<WorkoutsAdapter.ViewHo
             ivFeedPFP = itemView.findViewById(R.id.ivFeedPFP);
             tlWorkouts = itemView.findViewById(R.id.tlWorkouts);
             tvWorkoutTitle = itemView.findViewById(R.id.tvWorkoutTitle);
+            tvTimestamp = itemView.findViewById(R.id.tvTimestamp);
         }
 
         @SuppressLint("ClickableViewAccessibility")
@@ -103,6 +105,8 @@ public class WorkoutsAdapter extends RecyclerView.Adapter<WorkoutsAdapter.ViewHo
             Context tableContext = tlWorkouts.getContext();
 
             tvName.setText(workoutPerformed.getUser().getUsername());
+            String rawTime = workoutPerformed.getCreatedAt().toString();
+            tvTimestamp.setText(workoutPerformed.getRelativeTimeAgo(rawTime));
             ParseFile image = workoutPerformed.getPFP();
             if (image != null) {
                 Glide.with(mainActivity)
