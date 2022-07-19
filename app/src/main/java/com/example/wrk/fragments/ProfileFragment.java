@@ -116,6 +116,12 @@ public class ProfileFragment extends Fragment {
 
         tvDailyStreak = view.findViewById(R.id.tvDailyStreak);
         tvDailyStreak.setText(String.valueOf(user.getInt("streak")));
+        if (user.getInt("streak") == 1) {
+            tvDailyStreak.append(" day");
+        }
+        else {
+            tvDailyStreak.append(" days");
+        }
 
         tvWorkoutsThisMonth = view.findViewById(R.id.tvWorkoutsThisMonth);
         tvWorkoutsThisMonth.setText(String.valueOf(user.getInt("workoutsThisMonth")));
@@ -131,6 +137,20 @@ public class ProfileFragment extends Fragment {
 
         if (user.hasSameId(ParseUser.getCurrentUser())) {
             updateStreak(user);
+            // add percentage in comparison to your friends
+            try {
+                double percentage = 0;
+                percentage = calcPercentage();
+                if (percentage >= 0) {
+                    tvWorkoutsThisMonth.append(" (" + percentage + "% more than your friends!)");
+                }
+                else {
+                    tvWorkoutsThisMonth.append(" (" + (percentage * -1) + "% less than your friends!");
+                }
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+
             // send user to their profile page if they click on their own profile
             ibGymsNearMe = view.findViewById(R.id.ibProfile);
             ibGymsNearMe.setOnClickListener(new View.OnClickListener() {
@@ -175,6 +195,30 @@ public class ProfileFragment extends Fragment {
         adapter = new ProfileAdapter(getContext(), workoutsPerformed);
         rvPrevWorkouts.setAdapter(adapter);
         queryWorkouts();
+    }
+
+    private double calcPercentage() throws ParseException {
+        ParseUser currentUser = ParseUser.getCurrentUser();
+        List<ParseUser> followingList = getFollowing();
+        List<ParseUser> friendList = new ArrayList<>();
+        // to ensure that signed in user is not included in the calculations (they follow themselves by default)
+        for (int i = 0; i < followingList.size(); i++) {
+            if (!followingList.get(i).hasSameId(currentUser)) {
+                friendList.add(followingList.get(i));
+            }
+        }
+        int friendsWorkoutsThisMonth = 0;
+        double percentDifference = 0;
+        if (friendList.size() != 0) {
+            for (int i = 0; i < friendList.size(); i++) {
+                friendsWorkoutsThisMonth += friendList.get(i).fetchIfNeeded().getInt("workoutsThisMonth");
+            }
+            // calculate percent difference
+            double averageWorkoutsThisMonth = friendsWorkoutsThisMonth / friendList.size(); // # of workouts / friends
+            double difference = currentUser.getInt("workoutsThisMonth") - averageWorkoutsThisMonth;
+            percentDifference = (difference / averageWorkoutsThisMonth) * 100;
+        }
+        return percentDifference;
     }
 
     private void unFollow() {
