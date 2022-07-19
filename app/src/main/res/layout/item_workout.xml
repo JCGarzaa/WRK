@@ -64,6 +64,7 @@
                     android:textSize="24sp"
                     android:textStyle="bold"
                     tools:text="Chest Day" />
+
             </TableRow>
 
             <TableRow
@@ -90,6 +91,17 @@
             </TableRow>
 
         </TableLayout>
+
+        <ImageView
+            android:id="@+id/ivBicep"
+            android:layout_width="120dp"
+            android:layout_height="120dp"
+            android:alpha="0"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/avd_template_save" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 </com.google.android.material.card.MaterialCardView>
