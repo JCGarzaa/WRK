@@ -11,4 +11,7 @@
     <string name="cardio">Cardio</string>
     <string name="fullbody">Full Body</string>
     <string name="calisthenics">Calisthenics</string>
+    <string name="navTitle1">Change Username</string>
+    <string name="navTitle2">Change Password</string>
+    <string name="navTitle3">Logout</string>
 </resources>

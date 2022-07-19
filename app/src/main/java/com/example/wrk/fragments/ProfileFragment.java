@@ -8,15 +8,19 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.core.content.res.ResourcesCompat;
+import androidx.core.view.GravityCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
@@ -30,6 +34,7 @@ import com.example.wrk.MainActivity;
 import com.example.wrk.ProfileAdapter;
 import com.example.wrk.R;
 import com.example.wrk.models.WorkoutPerformed;
+import com.google.android.material.navigation.NavigationView;
 import com.parse.FindCallback;
 import com.parse.ParseException;
 import com.parse.ParseFile;
@@ -49,7 +54,6 @@ public class ProfileFragment extends Fragment {
     private MainActivity mainActivity;
     private ParseUser user;
     private ImageView ivProfilePicture;
-    private Button btnLogout;
     private TextView tvProfileName;
     private TextView tvProfileUsername;
     private TextView tvDailyStreak;
@@ -58,6 +62,8 @@ public class ProfileFragment extends Fragment {
     private ImageButton ibFollow;
     private RecyclerView rvPrevWorkouts;
     private ProgressBar progressBar;
+    private DrawerLayout mDrawerLayout;
+    private NavigationView navigationView;
     protected ProfileAdapter adapter;
     protected List<WorkoutPerformed> workoutsPerformed;
 
@@ -73,6 +79,7 @@ public class ProfileFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
     }
 
     @Override
@@ -86,6 +93,26 @@ public class ProfileFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        mDrawerLayout = view.findViewById(R.id.drawerLayout);
+        navigationView = view.findViewById(R.id.navmenu);
+        navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                item.setChecked(true);
+                // perform action based on which item pressed
+                switch (item.getItemId()) {
+                    case R.id.itemEditUsername:
+                    case R.id.itemEditPassword:
+                        break;
+                    case R.id.itemLogout:
+                        ParseUser.getCurrentUser().logOut();
+                        mainActivity.goLogin();
+                        break;
+                }
+                mDrawerLayout.closeDrawers();
+                return true;
+            }
+        });
 
         ivProfilePicture = view.findViewById(R.id.ivProfilePicture);
         progressBar = view.findViewById(R.id.pbLoading);
@@ -126,15 +153,6 @@ public class ProfileFragment extends Fragment {
         tvWorkoutsThisMonth = view.findViewById(R.id.tvWorkoutsThisMonth);
         tvWorkoutsThisMonth.setText(String.valueOf(user.getInt("workoutsThisMonth")));
 
-        btnLogout = view.findViewById(R.id.btnLogout);
-        btnLogout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                ParseUser.logOut();
-                mainActivity.goLogin();
-            }
-        });
-
         if (user.hasSameId(ParseUser.getCurrentUser())) {
             updateStreak(user);
             // add percentage in comparison to your friends
@@ -162,7 +180,7 @@ public class ProfileFragment extends Fragment {
             });
         }
         else {
-            btnLogout.setVisibility(View.INVISIBLE);
+            mDrawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);  // disable drawer from opening
             ibFollow = view.findViewById(R.id.ibProfile);
             if (isFollowedByCurrentUser()) {
                 ibFollow.setBackground(getResources().getDrawable(android.R.drawable.btn_star_big_on));
@@ -329,5 +347,29 @@ public class ProfileFragment extends Fragment {
         user.put("streak", streak);
         user.put("workoutsThisMonth", workoutsThisMonth);
         user.saveInBackground();
+    }
+
+    @Override
+    public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
+        // only create the settings menu button for a user's own profile
+        if (user.hasSameId(ParseUser.getCurrentUser())) {
+            mainActivity.getMenuInflater().inflate(R.menu.menu_top, menu);
+        }
+        super.onCreateOptionsMenu(menu, inflater);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        if (item.getItemId() == R.id.menuSettings) {
+            // check if drawer is already opened
+            if (mDrawerLayout.isDrawerOpen(GravityCompat.END)) {
+                mDrawerLayout.closeDrawers();
+            }
+            else {
+                mDrawerLayout.openDrawer(GravityCompat.END);
+            }
+
+        }
+        return super.onOptionsItemSelected(item);
     }
 }
