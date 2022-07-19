@@ -95,6 +95,7 @@ public class WorkoutsAdapter extends RecyclerView.Adapter<WorkoutsAdapter.ViewHo
         private ImageView ivBicep;
         private AnimatedVectorDrawableCompat avd;
         private AnimatedVectorDrawable avd2;
+        private TextView tvTimestamp;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -103,6 +104,7 @@ public class WorkoutsAdapter extends RecyclerView.Adapter<WorkoutsAdapter.ViewHo
             tlWorkouts = itemView.findViewById(R.id.tlWorkouts);
             tvWorkoutTitle = itemView.findViewById(R.id.tvWorkoutTitle);
             ivBicep = itemView.findViewById(R.id.ivBicep);
+            tvTimestamp = itemView.findViewById(R.id.tvTimestamp);
         }
 
         @SuppressLint("ClickableViewAccessibility")
@@ -110,6 +112,8 @@ public class WorkoutsAdapter extends RecyclerView.Adapter<WorkoutsAdapter.ViewHo
             Context tableContext = tlWorkouts.getContext();
 
             tvName.setText(workoutPerformed.getUser().getUsername());
+            String rawTime = workoutPerformed.getCreatedAt().toString();
+            tvTimestamp.setText(workoutPerformed.getRelativeTimeAgo(rawTime));
             ParseFile image = workoutPerformed.getPFP();
             if (image != null) {
                 Glide.with(mainActivity)
@@ -120,7 +124,7 @@ public class WorkoutsAdapter extends RecyclerView.Adapter<WorkoutsAdapter.ViewHo
             else {
                 // upload a default picture
                 Glide.with(mainActivity)
-                        .load(R.drawable.instagram_user_outline_24)
+                        .load(R.drawable.account)
                         .centerCrop()
                         .transform(new RoundedCorners(150))
                         .into(ivFeedPFP);
