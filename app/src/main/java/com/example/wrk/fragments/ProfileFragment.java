@@ -131,30 +131,6 @@ public class ProfileFragment extends Fragment {
         });
 
         ivProfilePicture = view.findViewById(R.id.ivProfilePicture);
-        ivProfilePicture.setOnClickListener(new View.OnClickListener() {
-            @SuppressLint("RestrictedApi")
-            @Override
-            public void onClick(View v) {
-                PopupMenu popupMenu = new PopupMenu(getContext(), v);
-                popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
-                    @Override
-                    public boolean onMenuItemClick(MenuItem item) {
-                        switch (item.getItemId()) {
-                            case R.id.itemTakePicture:
-                                launchCamera();
-                                break;
-                            case R.id.itemUploadPicture:
-                                onPickPhoto(ivProfilePicture);
-                                break;
-                        }
-                        return false;
-                    }
-                });
-                MenuInflater inflater = popupMenu.getMenuInflater();
-                inflater.inflate(R.menu.menu_popup, popupMenu.getMenu());
-                popupMenu.show();
-            }
-        });
         progressBar = view.findViewById(R.id.pbLoading);
 
         ParseFile file = user.getParseFile("profilePic");
@@ -208,6 +184,31 @@ public class ProfileFragment extends Fragment {
             } catch (ParseException e) {
                 e.printStackTrace();
             }
+
+            ivProfilePicture.setOnClickListener(new View.OnClickListener() {
+                @SuppressLint("RestrictedApi")
+                @Override
+                public void onClick(View v) {
+                    PopupMenu popupMenu = new PopupMenu(getContext(), v);
+                    popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                        @Override
+                        public boolean onMenuItemClick(MenuItem item) {
+                            switch (item.getItemId()) {
+                                case R.id.itemTakePicture:
+                                    launchCamera();
+                                    break;
+                                case R.id.itemUploadPicture:
+                                    onPickPhoto(ivProfilePicture);
+                                    break;
+                            }
+                            return false;
+                        }
+                    });
+                    MenuInflater inflater = popupMenu.getMenuInflater();
+                    inflater.inflate(R.menu.menu_popup, popupMenu.getMenu());
+                    popupMenu.show();
+                }
+            });
 
             // send user to their profile page if they click on their own profile
             ibGymsNearMe = view.findViewById(R.id.ibProfile);
