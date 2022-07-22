@@ -101,9 +101,6 @@ public class ProfileFragment extends Fragment {
                 item.setChecked(true);
                 // perform action based on which item pressed
                 switch (item.getItemId()) {
-                    case R.id.itemEditUsername:
-                    case R.id.itemEditPassword:
-                        break;
                     case R.id.itemLogout:
                         ParseUser.getCurrentUser().logOut();
                         mainActivity.goLogin();
@@ -163,7 +160,7 @@ public class ProfileFragment extends Fragment {
                     tvWorkoutsThisMonth.append(" (" + percentage + "% more than your friends!)");
                 }
                 else {
-                    tvWorkoutsThisMonth.append(" (" + (percentage * -1) + "% less than your friends!");
+                    tvWorkoutsThisMonth.append(" (" + (percentage * -1) + "% less than your friends!)");
                 }
             } catch (ParseException e) {
                 e.printStackTrace();
@@ -236,7 +233,7 @@ public class ProfileFragment extends Fragment {
             double difference = currentUser.getInt("workoutsThisMonth") - averageWorkoutsThisMonth;
             percentDifference = (difference / averageWorkoutsThisMonth) * 100;
         }
-        return percentDifference;
+        return Math.round(percentDifference * 10.0) / 10.0; // round to one decimal
     }
 
     private void unFollow() {

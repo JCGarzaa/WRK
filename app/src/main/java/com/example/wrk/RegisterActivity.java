@@ -63,5 +63,19 @@ public class RegisterActivity extends AppCompatActivity {
                 user.saveInBackground();
             }
         });
+        etRegName.setTranslationX(300);
+        etRegUsername.setTranslationX(300);
+        etRegPassword.setTranslationX(300);
+        btnRegister.setTranslationX(300);
+
+        etRegName.setAlpha(0);
+        etRegUsername.setAlpha(0);
+        etRegPassword.setAlpha(0);
+        btnRegister.setAlpha(0);
+
+        etRegName.animate().translationX(0).alpha(1).setDuration(1000).setStartDelay(300).start();
+        etRegUsername.animate().translationX(0).alpha(1).setDuration(1000).setStartDelay(500).start();
+        etRegPassword.animate().translationX(0).alpha(1).setDuration(1000).setStartDelay(700).start();
+        btnRegister.animate().translationX(0).alpha(1).setDuration(1000).setStartDelay(900).start();
     }
 }

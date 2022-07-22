@@ -51,6 +51,17 @@ public class LoginActivity extends AppCompatActivity {
                 loginUser(username, password);
             }
         });
+        etUsername.setTranslationX(300);
+        etPassword.setTranslationX(300);
+        btnLogin.setTranslationX(300);
+
+        etUsername.setAlpha(0);
+        etPassword.setAlpha(0);
+        btnLogin.setAlpha(0);
+
+        etUsername.animate().translationX(0).alpha(1).setDuration(1000).setStartDelay(300).start();
+        etPassword.animate().translationX(0).alpha(1).setDuration(1000).setStartDelay(500).start();
+        btnLogin.animate().translationX(0).alpha(1).setDuration(1000).setStartDelay(700).start();
     }
 
     private void loginUser(String username, String password) {
