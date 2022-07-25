@@ -152,18 +152,21 @@ public class ProfileFragment extends Fragment {
 
         if (user.hasSameId(ParseUser.getCurrentUser())) {
             updateStreak(user);
-            // add percentage in comparison to your friends
-            try {
-                double percentage = 0;
-                percentage = calcPercentage();
-                if (percentage >= 0) {
-                    tvWorkoutsThisMonth.append(" (" + percentage + "% more than your friends!)");
+            // check if user follows anyone (user follows themselves by default)
+            if (user.getList("following").size() > 1) {
+                // add percentage in comparison to your friends
+                try {
+                    double percentage = 0;
+                    percentage = calcPercentage();
+                    if (percentage >= 0) {
+                        tvWorkoutsThisMonth.append(" (" + percentage + "% more than people you follow!)");
+                    }
+                    else {
+                        tvWorkoutsThisMonth.append(" (" + (percentage * -1) + "% less than people you follow!)");
+                    }
+                } catch (ParseException e) {
+                    e.printStackTrace();
                 }
-                else {
-                    tvWorkoutsThisMonth.append(" (" + (percentage * -1) + "% less than your friends!)");
-                }
-            } catch (ParseException e) {
-                e.printStackTrace();
             }
 
             // send user to their profile page if they click on their own profile
