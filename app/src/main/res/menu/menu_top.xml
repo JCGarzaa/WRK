@@ -5,6 +5,6 @@
     <item
         android:id="@+id/menuSettings"
         android:icon="@drawable/cog"
-        android:title="Item"
+        android:title="Settings"
         app:showAsAction="always" />
 </menu>

@@ -22,6 +22,8 @@ public class RegisterActivity extends AppCompatActivity {
     private EditText etRegUsername;
     private EditText etRegPassword;
     private Button btnRegister;
+    public static final int TRANSLATION_X = 300;        // .3 seconds
+    public static final int ANIMATION_DURATION = 1000;  // 1 second
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,5 +65,19 @@ public class RegisterActivity extends AppCompatActivity {
                 user.saveInBackground();
             }
         });
+        etRegName.setTranslationX(TRANSLATION_X);
+        etRegUsername.setTranslationX(TRANSLATION_X);
+        etRegPassword.setTranslationX(TRANSLATION_X);
+        btnRegister.setTranslationX(TRANSLATION_X);
+
+        etRegName.setAlpha(0);
+        etRegUsername.setAlpha(0);
+        etRegPassword.setAlpha(0);
+        btnRegister.setAlpha(0);
+
+        etRegName.animate().translationX(0).alpha(1).setDuration(ANIMATION_DURATION).setStartDelay(300).start();
+        etRegUsername.animate().translationX(0).alpha(1).setDuration(ANIMATION_DURATION).setStartDelay(500).start();
+        etRegPassword.animate().translationX(0).alpha(1).setDuration(ANIMATION_DURATION).setStartDelay(700).start();
+        btnRegister.animate().translationX(0).alpha(1).setDuration(ANIMATION_DURATION).setStartDelay(900).start();
     }
 }

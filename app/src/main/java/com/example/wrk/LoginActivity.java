@@ -22,6 +22,8 @@ public class LoginActivity extends AppCompatActivity {
     private EditText etPassword;
     private Button btnLogin;
     private TextView tvRegisterClick;
+    public static final int TRANSLATION_X = 300;        // .3 seconds
+    public static final int ANIMATION_DURATION = 1000;  // 1 second
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,6 +53,17 @@ public class LoginActivity extends AppCompatActivity {
                 loginUser(username, password);
             }
         });
+        etUsername.setTranslationX(TRANSLATION_X);
+        etPassword.setTranslationX(TRANSLATION_X);
+        btnLogin.setTranslationX(TRANSLATION_X);
+
+        etUsername.setAlpha(0);
+        etPassword.setAlpha(0);
+        btnLogin.setAlpha(0);
+
+        etUsername.animate().translationX(0).alpha(1).setDuration(ANIMATION_DURATION).setStartDelay(300).start();
+        etPassword.animate().translationX(0).alpha(1).setDuration(ANIMATION_DURATION).setStartDelay(500).start();
+        btnLogin.animate().translationX(0).alpha(1).setDuration(ANIMATION_DURATION).setStartDelay(700).start();
     }
 
     private void loginUser(String username, String password) {
