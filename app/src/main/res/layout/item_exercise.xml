@@ -21,7 +21,6 @@
         android:id="@+id/tvExBodyPart"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="4dp"
         android:textColor="@color/red_light"
         app:layout_constraintStart_toStartOf="@+id/tvExName"
         app:layout_constraintTop_toBottomOf="@+id/tvExName"

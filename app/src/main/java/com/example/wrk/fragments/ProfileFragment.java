@@ -44,6 +44,8 @@ import com.example.wrk.ProfileAdapter;
 import com.example.wrk.R;
 import com.example.wrk.models.WorkoutPerformed;
 import com.google.android.material.navigation.NavigationView;
+import com.like.LikeButton;
+import com.like.OnLikeListener;
 import com.parse.FindCallback;
 import com.parse.ParseException;
 import com.parse.ParseFile;
@@ -76,6 +78,7 @@ public class ProfileFragment extends Fragment {
     private TextView tvWorkoutsThisMonth;
     private ImageButton ibGymsNearMe;
     private ImageButton ibFollow;
+    private LikeButton btnFollow;
     private RecyclerView rvPrevWorkouts;
     private ProgressBar progressBar;
     private DrawerLayout mDrawerLayout;
@@ -166,7 +169,9 @@ public class ProfileFragment extends Fragment {
         tvWorkoutsThisMonth = view.findViewById(R.id.tvWorkoutsThisMonth);
         tvWorkoutsThisMonth.setText(String.valueOf(user.getInt("workoutsThisMonth")));
 
+        btnFollow = view.findViewById(R.id.star_button);
         if (user.hasSameId(ParseUser.getCurrentUser())) {
+            btnFollow.setVisibility(View.INVISIBLE);
             updateStreak(user);
             // check if user follows anyone (user follows themselves by default)
             if (user.getList("following").size() > 1) {
@@ -223,24 +228,24 @@ public class ProfileFragment extends Fragment {
         else {
             mDrawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);  // disable drawer from opening
             ibFollow = view.findViewById(R.id.ibProfile);
+            ibFollow.setVisibility(View.INVISIBLE);
+            btnFollow = view.findViewById(R.id.star_button);
             if (isFollowedByCurrentUser()) {
-                ibFollow.setBackground(getResources().getDrawable(android.R.drawable.btn_star_big_on));
+                btnFollow.setLiked(true);
             }
             else {
-                ibFollow.setBackground(getResources().getDrawable(android.R.drawable.btn_star_big_off));
+                btnFollow.setLiked(false);
             }
 
-            ibFollow.setOnClickListener(new View.OnClickListener() {
+            btnFollow.setOnLikeListener(new OnLikeListener() {
                 @Override
-                public void onClick(View v) {
-                    if (isFollowedByCurrentUser()) {
-                        unFollow();
-                        ibFollow.setBackground(getResources().getDrawable(android.R.drawable.btn_star_big_off));
-                    }
-                    else {
-                        follow();
-                        ibFollow.setBackground(getResources().getDrawable(android.R.drawable.btn_star_big_on));
-                    }
+                public void liked(LikeButton likeButton) {
+                    follow();
+                }
+
+                @Override
+                public void unLiked(LikeButton likeButton) {
+                    unFollow();
                 }
             });
         }

@@ -8,7 +8,6 @@ import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
-import android.support.annotation.NonNull;
 import android.view.View;
 
 import androidx.core.content.ContextCompat;
@@ -38,17 +37,17 @@ abstract public class SwipeToDeleteCallback extends ItemTouchHelper.Callback {
     }
 
     @Override
-    public int getMovementFlags(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder) {
+    public int getMovementFlags(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder) {
         return makeMovementFlags(0, ItemTouchHelper.LEFT);
     }
 
     @Override
-    public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder viewHolder1) {
+    public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder viewHolder1) {
         return false;
     }
 
     @Override
-    public void onChildDraw(@NonNull Canvas c, @NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, float dX, float dY, int actionState, boolean isCurrentlyActive) {
+    public void onChildDraw(Canvas c, RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, float dX, float dY, int actionState, boolean isCurrentlyActive) {
         super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive);
 
         View itemView = viewHolder.itemView;
@@ -83,7 +82,7 @@ abstract public class SwipeToDeleteCallback extends ItemTouchHelper.Callback {
     }
 
     @Override
-    public float getSwipeThreshold(@NonNull RecyclerView.ViewHolder viewHolder) {
+    public float getSwipeThreshold(RecyclerView.ViewHolder viewHolder) {
         return 0.7f;
     }
 }
