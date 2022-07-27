@@ -18,6 +18,7 @@ import android.widget.ProgressBar;
 
 import com.example.wrk.MainActivity;
 import com.example.wrk.R;
+import com.example.wrk.SimpleSectionedRecyclerViewAdapter;
 import com.example.wrk.models.WorkoutPerformed;
 import com.example.wrk.WorkoutsAdapter;
 import com.example.wrk.models.WorkoutTemplate;
@@ -71,7 +72,6 @@ public class FeedFragment extends Fragment {
         workoutsPerformed = new ArrayList<>();
         adapter = new WorkoutsAdapter((MainActivity) getContext(), workoutsPerformed);
         rvWorkouts.setLayoutManager(layoutManager);
-        rvWorkouts.setAdapter(adapter);
         try {
             queryRecentFollowedWorkouts();
         } catch (ParseException e) {
@@ -87,6 +87,20 @@ public class FeedFragment extends Fragment {
         } catch (ParseException e) {
             Log.e(TAG, "ERROR FETCHING COMMUNITY WORKOUTS. ", e);
         }
+        // code to provide a sectioned list
+        List<SimpleSectionedRecyclerViewAdapter.Section> sections =
+                new ArrayList<SimpleSectionedRecyclerViewAdapter.Section>();
+
+        // sections
+        sections.add(new SimpleSectionedRecyclerViewAdapter.Section(0,"From People You Know"));
+        sections.add(new SimpleSectionedRecyclerViewAdapter.Section(recentFollowedWorkouts.size(),"Hottest Templates"));
+        sections.add(new SimpleSectionedRecyclerViewAdapter.Section(recentFollowedWorkouts.size() + mostPopularWorkouts.size(),"From the Community"));
+
+        SimpleSectionedRecyclerViewAdapter.Section[] dummy = new SimpleSectionedRecyclerViewAdapter.Section[sections.size()];
+        SimpleSectionedRecyclerViewAdapter mSectionedAdapter = new
+                SimpleSectionedRecyclerViewAdapter(getContext(),R.layout.section,R.id.section_text,adapter);
+        mSectionedAdapter.setSections(sections.toArray(dummy));
+        rvWorkouts.setAdapter(mSectionedAdapter);
         adapter.notifyDataSetChanged();
     }
 
