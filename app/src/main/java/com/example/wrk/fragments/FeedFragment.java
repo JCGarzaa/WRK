@@ -92,9 +92,13 @@ public class FeedFragment extends Fragment {
                 new ArrayList<SimpleSectionedRecyclerViewAdapter.Section>();
 
         // sections
-        sections.add(new SimpleSectionedRecyclerViewAdapter.Section(0,"From People You Know"));
+        if (recentFollowedWorkouts.size() > 0) {
+            sections.add(new SimpleSectionedRecyclerViewAdapter.Section(0,"From People You Know"));
+        }
         sections.add(new SimpleSectionedRecyclerViewAdapter.Section(recentFollowedWorkouts.size(),"Hottest Templates"));
-        sections.add(new SimpleSectionedRecyclerViewAdapter.Section(recentFollowedWorkouts.size() + mostPopularWorkouts.size(),"From the Community"));
+        if (mostPopularWorkouts.size() > 0) {
+            sections.add(new SimpleSectionedRecyclerViewAdapter.Section(recentFollowedWorkouts.size() + mostPopularWorkouts.size(),"From the Community"));
+        }
 
         SimpleSectionedRecyclerViewAdapter.Section[] dummy = new SimpleSectionedRecyclerViewAdapter.Section[sections.size()];
         SimpleSectionedRecyclerViewAdapter mSectionedAdapter = new
