@@ -124,6 +124,7 @@ An app to create, edit, and post workouts for yourself and others to see and use
    | components | Array       | Array of exercises in the workout
    | createdAt     | DateTime | date when post is created (default field) |
    | updatedAt     | DateTime | date when post is last updated (default field) |
+   | savedBy       | Array    | List of users that have saved this template |
 
 #### WorkoutComponent
 
@@ -151,3 +152,4 @@ An app to create, edit, and post workouts for yourself and others to see and use
    | lastWD        | String   | date of the most recent workout |
    | createdAt     | DateTime | date when post is created (default field) |
    | updatedAt     | DateTime | date when post is last updated (default field) |
+   | following    | Array     | List of users who the user follows |
